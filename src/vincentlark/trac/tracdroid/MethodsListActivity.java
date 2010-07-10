@@ -18,7 +18,7 @@ public class MethodsListActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 
-	  setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, TracDroid.getMethods() ));
+	  setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, TracDroid.server.listMethods() ));
 
 	  ListView lv = getListView();
 	  lv.setTextFilterEnabled(true);

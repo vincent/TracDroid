@@ -3,6 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="/home/vincent/Téléchargements/org.lustin.trac_xml_rpc.jar" sourcepath="/home/vincent/Téléchargements/org.lustin.trac_xml_rpc-sources"/>
+	<classpathentry kind="lib" path="/home/vincent/workspace/libs/org.lustin.trac_xml_rpc.jar" sourcepath="/home/vincent/workspace/libs/org.lustin.trac_xml_rpc-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/vincent/workspace/libs/org.lustin.trac_xml_rpc-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
