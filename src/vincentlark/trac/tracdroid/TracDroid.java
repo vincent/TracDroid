@@ -19,7 +19,7 @@ public class TracDroid extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TracDroid.server = new TracServer("https://trac.jamendo.com/tracjamendo/login/xmlrpc", "vincent",  "sanBar44");
+        TracDroid.server = new TracServer("https://trac.jamendo.com/tracjamendo/login/xmlrpc", "username",  "password");
         
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
