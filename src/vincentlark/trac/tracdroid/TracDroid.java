@@ -19,7 +19,7 @@ public class TracDroid extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TracDroid.server = new TracServer("https://trac.jamendo.com/tracjamendo/login/xmlrpc", "username",  "password");
+        TracDroid.server = new TracServer("https://trac.jamendo.com/tracjamendo/login/xmlrpc", "vincent",  "sanBar44");
         
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
@@ -27,22 +27,22 @@ public class TracDroid extends TabActivity {
         Intent intent;  // Reusable Intent for each tab
 
         // Create an Intent to launch WikiActivity
-        intent = new Intent().setClass(this, WikiActivity.class);
+        intent = new Intent().setClass(getApplicationContext(), WikiActivity.class);
         spec = tabHost.newTabSpec("wiki").setIndicator("Wiki", res.getDrawable(R.drawable.ic_tab_wiki)).setContent(intent);
         tabHost.addTab(spec);
 
         // Create an Intent to launch RoadmapsActivity
-        intent = new Intent().setClass(this, RoadmapsActivity.class);
+        intent = new Intent().setClass(getApplicationContext(), RoadmapsActivity.class);
         spec = tabHost.newTabSpec("roadmaps").setIndicator("Roadmaps", res.getDrawable(R.drawable.ic_tab_roadmaps)).setContent(intent);
         tabHost.addTab(spec);
 
         // Create an Intent to launch TimelineActivity
-        intent = new Intent().setClass(this, TimelineActivity.class);
+        intent = new Intent().setClass(getApplicationContext(), TimelineActivity.class);
         spec = tabHost.newTabSpec("timeline").setIndicator("Timeline", res.getDrawable(R.drawable.ic_tab_timeline)).setContent(intent);
         tabHost.addTab(spec);
 
         // Create an Intent to launch TicketsActivity
-        intent = new Intent().setClass(this, TicketsActivity.class);
+        intent = new Intent().setClass(getApplicationContext(), TicketsActivity.class);
         spec = tabHost.newTabSpec("tickets").setIndicator("Tickets", res.getDrawable(R.drawable.ic_tab_tickets)).setContent(intent);
         tabHost.addTab(spec);
 

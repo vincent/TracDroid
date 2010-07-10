@@ -18,14 +18,13 @@ public class MethodsListActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 
-	  setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, TracDroid.server.listMethods() ));
+	  setListAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, TracDroid.server.listMethods() ));
 
 	  ListView lv = getListView();
 	  lv.setTextFilterEnabled(true);
 
 	  lv.setOnItemClickListener(new OnItemClickListener() {
-	    public void onItemClick(AdapterView<?> parent, View view,
-	        int position, long id) {
+	    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 	      // When clicked, show a toast with the TextView text
 	      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
 	          Toast.LENGTH_SHORT).show();

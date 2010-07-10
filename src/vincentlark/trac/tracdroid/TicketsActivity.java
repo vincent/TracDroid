@@ -24,7 +24,7 @@ public class TicketsActivity extends ThreadedListActivity {
 		TextView title = (TextView) findViewById(R.id.list_title);
 		title.setText("Tickets changes today");
 		
-		adapter = new TicketListAdapter(this);
+		adapter = new TicketListAdapter(getApplicationContext());
 		setListAdapter(adapter);
 
 		startLongRunningOperation();
