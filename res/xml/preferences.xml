@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+	<ListPreference android:key="trac_server" android:summary="Select a Trac server" android:persistent="true" android:title="Trac server" android:entries="@array/prefTracServerLabels" android:entryValues="@array/prefTracServerValues"></ListPreference>
+	<EditTextPreference android:title="Trac domain" android:summary="Domain of your Trac server" android:defaultValue="trac.company.com" android:key="domain" android:persistent="true"></EditTextPreference>
+	<EditTextPreference android:title="Username" android:summary="Your Trac username" android:key="username" android:persistent="true"></EditTextPreference>
+	<CheckBoxPreference android:title="SSL" android:summary="Is your trac on https ?" android:key="use_ssl" android:persistent="true"></CheckBoxPreference>
+	<EditTextPreference android:title="Password" android:summary="Your Trac password" android:key="password" android:password="true" android:persistent="true"></EditTextPreference>
+	<EditTextPreference android:title="Wii start page" android:summary="The default wiki to show" android:key="wiki_start_page" android:defaultValue="WikiStart" android:persistent="true"></EditTextPreference>
+</PreferenceScreen>

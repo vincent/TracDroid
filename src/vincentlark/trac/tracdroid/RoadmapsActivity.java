@@ -1,7 +1,9 @@
 package vincentlark.trac.tracdroid;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
+
+import vincentlark.trac.tracdroid.ThreadedListActivity.EfficientAdapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,43 +19,42 @@ import android.widget.BaseAdapter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-public class TicketsActivity extends ThreadedListActivity {
 
+public class RoadmapsActivity extends ThreadedListActivity {
+	
+	// Today
+	private static Date today = new Date();
 	static Vector<HashMap> data = new Vector<HashMap>();
-
+	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		setContentView(R.layout.simple_list);
 
 		TextView title = (TextView) findViewById(R.id.list_title);
-		title.setText("Tickets changes today");
+		title.setText("Open milestones");
 		
-		adapter = new TicketListAdapter(getApplicationContext());
+		adapter = new RoadmapsListAdapter(getApplicationContext());
 		setListAdapter(adapter);
-
+		
 		startLongRunningOperation();
-	}
+    }
 
     protected void startLongRunningOperation() {
 
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
             public void run() {
-            	Log.d("PROFILING", "start thread");
-            	
-            	Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.HOUR, -48);
-				data = TracDroid.server.getRecentTicketChanges( cal.getTime() );
-				mHandler.post(mUpdateResults);
+            	data = TracDroid.server.listRoadmaps();
+                mHandler.post(mUpdateResults);
             }
         };
         t.start();
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.tickets_menu, menu);
+        inflater.inflate(R.menu.roadmaps_menu, menu);
         return true;
     }
 
@@ -61,7 +62,7 @@ public class TicketsActivity extends ThreadedListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-        case R.id.tickets_menu_settings:
+        case R.id.roadmaps_menu_settings:
         	startActivity(new Intent().setClass(getApplicationContext(), TracDroidPreferences.class));
         	return true;
         default:
@@ -69,28 +70,31 @@ public class TicketsActivity extends ThreadedListActivity {
         }
     }
 
-    public class TicketListAdapter extends EfficientAdapter {
+	public class RoadmapsListAdapter extends EfficientAdapter {
 
-		public TicketListAdapter(Context context) {
+		public RoadmapsListAdapter(Context context) {
 			super(context);
 		}
 
 		@Override
 		protected String getItemTextLine1(Integer position) {
-			if (data.size() > 0) {
-	          HashMap ticket_change = data.get(position);
-	          return "#"+ticket_change.get("id")+" by "+ticket_change.get("author");
-			}
-			else return "No recent ticket changes";
+			HashMap milestone = data.get(position);
+			return (String) milestone.get("name");
 		}
 
 		@Override
 		protected String getItemTextLine2(Integer position) {
-			if (data.size() > 0) {
-	          HashMap ticket_change = data.get(position);
-	          return ticket_change.get("oldvalue") + " => " + ticket_change.get("newvalue");
+			HashMap milestone = data.get(position);
+			String due;
+	          
+			Log.d("DATE", (String) milestone.get("name"));
+			if (milestone.get("due") == null) {
+				due = "No date set";
 			}
-			else return "";
+			else {
+				due = "due " + PrettyDateDiff.between(today, (Date)milestone.get("due"));
+			}
+			return due;
 		}
 
         @Override
@@ -102,7 +106,7 @@ public class TicketsActivity extends ThreadedListActivity {
         @Override
         public int getCount() {
           // TODO Auto-generated method stub
-          return Math.max(data.size(), 1);
+          return data.size();
         }
 
         @Override
@@ -117,5 +121,4 @@ public class TicketsActivity extends ThreadedListActivity {
     		return null;
     	}
     }
-
 }

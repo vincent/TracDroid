@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu android:id="@+id/wiki_menu"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/wiki_menu_home" android:title="Home"></item>
+	<item android:id="@+id/wiki_menu_recent" android:title="Recent"></item>
+	<item android:id="@+id/wiki_menu_new" android:title="New"></item>
+	<item android:id="@+id/wiki_menu_edit" android:title="Edit"></item>
+	<item android:id="@+id/wiki_menu_save" android:title="Save"></item>
+	<item android:id="@+id/wiki_menu_search" android:title="Search"></item>
+	<item android:id="@+id/wiki_menu_settings" android:title="Settings"></item>
+</menu>

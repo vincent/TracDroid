@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu android:id="@+id/timeline_menu"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/timeline_menu_home" android:title="Path"></item>
+	<item android:id="@+id/timeline_menu_recent" android:title="By users"></item>
+	<item android:id="@+id/timeline_menu_new" android:title="By date"></item>
+	<item android:id="@+id/timeline_menu_edit" android:title="Search"></item>
+	<item android:id="@+id/timeline_menu_settings" android:title="Settings"></item>
+</menu>
