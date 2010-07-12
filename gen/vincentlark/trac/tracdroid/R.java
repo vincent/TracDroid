@@ -12,6 +12,10 @@ public final class R {
         public static final int push_up_in=0x7f040000;
         public static final int push_up_out=0x7f040001;
     }
+    public static final class array {
+        public static final int prefTracServerLabels=0x7f070000;
+        public static final int prefTracServerValues=0x7f070001;
+    }
     public static final class attr {
     }
     public static final class drawable {
@@ -30,21 +34,39 @@ public final class R {
         public static final int icon=0x7f02000c;
     }
     public static final class id {
-        public static final int LinearLayout01=0x7f070004;
-        public static final int commit_dialog=0x7f070003;
-        public static final int commit_dialog_cancel=0x7f070007;
-        public static final int commit_dialog_ok=0x7f070006;
-        public static final int commit_dialog_text=0x7f070005;
-        public static final int details=0x7f070009;
-        public static final int lineItem=0x7f070000;
-        public static final int list_title=0x7f070008;
-        public static final int textLine=0x7f070001;
-        public static final int textLine2=0x7f070002;
-        public static final int webview_html=0x7f07000a;
-        public static final int webview_text=0x7f07000b;
-        public static final int wiki_menu=0x7f07000c;
-        public static final int wiki_menu_edit=0x7f07000d;
-        public static final int wiki_menu_save=0x7f07000e;
+        public static final int commit_dialog_text=0x7f090003;
+        public static final int details=0x7f090005;
+        public static final int home_menu_settings=0x7f090009;
+        public static final int lineItem=0x7f090000;
+        public static final int list_title=0x7f090004;
+        public static final int roadmaps_menu=0x7f09000a;
+        public static final int roadmaps_menu_edit=0x7f09000d;
+        public static final int roadmaps_menu_home=0x7f09000b;
+        public static final int roadmaps_menu_new=0x7f09000c;
+        public static final int roadmaps_menu_settings=0x7f09000e;
+        public static final int textLine=0x7f090001;
+        public static final int textLine2=0x7f090002;
+        public static final int tickets_menu=0x7f09000f;
+        public static final int tickets_menu_edit=0x7f090012;
+        public static final int tickets_menu_home=0x7f090010;
+        public static final int tickets_menu_new=0x7f090011;
+        public static final int tickets_menu_settings=0x7f090013;
+        public static final int timeline_menu=0x7f090014;
+        public static final int timeline_menu_edit=0x7f090018;
+        public static final int timeline_menu_home=0x7f090015;
+        public static final int timeline_menu_new=0x7f090017;
+        public static final int timeline_menu_recent=0x7f090016;
+        public static final int timeline_menu_settings=0x7f090019;
+        public static final int webview_html=0x7f090006;
+        public static final int webview_text=0x7f090007;
+        public static final int wiki_menu=0x7f090008;
+        public static final int wiki_menu_edit=0x7f09001d;
+        public static final int wiki_menu_home=0x7f09001a;
+        public static final int wiki_menu_new=0x7f09001c;
+        public static final int wiki_menu_recent=0x7f09001b;
+        public static final int wiki_menu_save=0x7f09001e;
+        public static final int wiki_menu_search=0x7f09001f;
+        public static final int wiki_menu_settings=0x7f090020;
     }
     public static final class layout {
         public static final int adaptor_content=0x7f030000;
@@ -55,10 +77,17 @@ public final class R {
         public static final int wikiview=0x7f030005;
     }
     public static final class menu {
-        public static final int wiki_menu=0x7f060000;
+        public static final int home_menu=0x7f080000;
+        public static final int roadmaps_menu=0x7f080001;
+        public static final int tickets_menu=0x7f080002;
+        public static final int timeline_menu=0x7f080003;
+        public static final int wiki_menu=0x7f080004;
     }
     public static final class string {
-        public static final int app_name=0x7f050001;
-        public static final int hello=0x7f050000;
+        public static final int app_name=0x7f060001;
+        public static final int hello=0x7f060000;
+    }
+    public static final class xml {
+        public static final int preferences=0x7f050000;
     }
 }

@@ -2,4 +2,8 @@
 <resources>
     <string name="hello">Hello World, TracDroid!</string>
     <string name="app_name">TracDroid</string>
+<string-array name="prefTracServerLabels"><item>Create a new one</item>
+</string-array>
+<string-array name="prefTracServerValues"><item>new</item>
+</string-array>
 </resources>

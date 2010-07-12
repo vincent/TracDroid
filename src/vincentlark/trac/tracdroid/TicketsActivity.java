@@ -54,14 +54,20 @@ public class TicketsActivity extends ThreadedListActivity {
 
 		@Override
 		protected String getItemTextLine1(Integer position) {
+			if (data.size() > 0) {
 	          HashMap ticket_change = data.get(position);
 	          return "#"+ticket_change.get("id")+" by "+ticket_change.get("author");
+			}
+			else return "No recent ticket changes";
 		}
 
 		@Override
 		protected String getItemTextLine2(Integer position) {
+			if (data.size() > 0) {
 	          HashMap ticket_change = data.get(position);
 	          return ticket_change.get("oldvalue") + " => " + ticket_change.get("newvalue");
+			}
+			else return "";
 		}
 
         @Override
@@ -73,7 +79,7 @@ public class TicketsActivity extends ThreadedListActivity {
         @Override
         public int getCount() {
           // TODO Auto-generated method stub
-          return data.size();
+          return Math.max(data.size(), 1);
         }
 
         @Override
