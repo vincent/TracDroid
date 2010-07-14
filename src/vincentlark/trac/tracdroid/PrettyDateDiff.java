@@ -1,6 +1,6 @@
 package vincentlark.trac.tracdroid;
 
-import java.text.DateFormat;
+import java.math.BigInteger;
 import java.util.Date;
 
 import android.util.Log;
@@ -8,48 +8,75 @@ import android.util.Log;
 public class PrettyDateDiff {
 
 	public static String between(Date date1, Date date2) {
-		Log.d("DATE 1", DateFormat.getDateInstance().format(date1));
-		Log.d("DATE 2", DateFormat.getDateInstance().format(date2));
 		
-        long diff = new Integer((int) (date2.getTime() - date1.getTime() / 1000)).longValue();
-		String res = diff + " seconds";
+		String diff_ms = String.valueOf(date2.getTime() - date1.getTime());
+		String res;
+
+		long diff = new BigInteger(diff_ms).divide( new BigInteger("1000")).longValue();
 		
-		if (diff > 2629743) {
-	    	long mdiff = Math.round(diff / 60 / 60 / 24);
-	        res =  String.format("in %d days", mdiff);
+		if (diff > 37747200) {
+			// TODO: compute months
+	    	long mdiff = Math.round(diff / 37747200);
+	        res =  String.format("in %d years", mdiff);
+	    }
+		else if (diff > 3145600) {
+	    	long mdiff = Math.round(diff / 3145600);
+	        res =  String.format("in %d months", mdiff);
+	    }
+		else if (diff > 786400) {
+	    	long mdiff = Math.round(diff / 786400);
+	        res =  String.format("in %d weeks", mdiff);
 	    }
 		else if (diff > 86400) {
-	    	long mdiff = Math.round(diff / 60 / 60);
-	        res =  String.format("in %d hours", mdiff);
+	    	long mdiff = Math.round(diff / 86400);
+	        res =  String.format("in %d days", mdiff);
 	    }
 		else if (diff > 3600) {
+	    	long mdiff = Math.round(diff / 3600);
+	        res =  String.format("in %d hours", mdiff);
+	    }
+		else if (diff > 60) {
 	        long mdiff = Math.round(diff / 60);
 	        res =  String.format("in %d minutes", mdiff);
 	    }
-		else if (diff > 60) {
+		else if (diff > 30 && diff < 60) {
 	        res = "in less than a minute";
 	    }
-		else if (diff > 0 && diff < 30) {
-	        res = "now";
+		else if (diff > 0) {
+	        res =  String.format("in %d seconds", diff);
+	    }
+		else if (diff > -30) {
+	        res =  String.format("%d seconds ago", diff);
 	    }
 		else if (diff > -60) {
 	        res = "less than a minute ago";
 	    }
 		else if (diff > -3600) {
-	        long mdiff = Math.round(diff / 60);
+	        long mdiff = Math.abs(Math.round(diff / 60));
 	        res =  String.format("%d minutes ago", mdiff);
 	    }
 		else if (diff > -86400) {
-	    	long mdiff = Math.round(diff / 60 / 60);
+	    	long mdiff = Math.abs(Math.round(diff / 3600));
 	        res =  String.format("%d hours ago", mdiff);
 	    }
-		else if (diff > -2629743) {
-	    	long mdiff = Math.round(diff / 60 / 60 / 24);
+		else if (diff > -786400) {
+	    	long mdiff = Math.abs(Math.round(diff / 86400));
 	        res =  String.format("%d days ago", mdiff);
 	    }
+		else if (diff > -3145600) {
+	    	long mdiff = Math.abs(Math.round(diff / 786400));
+	        res =  String.format("%d weeks ago", mdiff);
+	    }
+		else if (diff > -37747200) {
+	    	long mdiff = Math.abs(Math.round(diff / 3145600));
+	        res =  String.format("%d months ago", mdiff);
+	    }
 		else {
-	        res = "never";
-	    }   		
+			// TODO: compute months
+	    	long mdiff = Math.abs(Math.round(diff / 37747200));
+	        res =  String.format("%d years ago", mdiff);
+		}
+		
 		return res;
 	}
 	

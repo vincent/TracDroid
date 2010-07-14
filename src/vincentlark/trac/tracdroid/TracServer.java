@@ -83,6 +83,7 @@ public class TracServer {
         		if (!(milestone.get("due") instanceof Date)) {
         			milestone.put("due", null);
         		}
+        		//else Log.d("MILESTONE DUE", milestone.get("name").toString() + " => " + milestone.get("due").toString());
         		roadmaps.add(milestone);
         	}
         	

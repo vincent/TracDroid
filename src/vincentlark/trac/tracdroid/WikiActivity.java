@@ -86,16 +86,9 @@ public class WikiActivity extends Activity {
             }
         	
 			public void redirectToWiki(String url) {
-    		   	URL parsed_url = null;
-    		   	try {
-					parsed_url = new URL(url);
-				} catch (MalformedURLException e) {}
-
-				String baseUrl = (parsed_url.getProtocol() + "://" + parsed_url.getHost());
-				Log.d("WIKI", "Is "+baseUrl+" = "+TracDroid.server.domain);
-				if (parsed_url != null && baseUrl.equals(TracDroid.server.domain)) {
-					String pagename = baseUrl.replaceFirst(TracDroid.server.domain+"/wiki/", "");
-					Log.d("WIKI", pagename + " is ours, get it");
+				if (url.startsWith(TracDroid.server.domain)) {
+					// The user switched to a page of the current trac
+					String pagename = url.replaceFirst(TracDroid.server.domain+"/wiki/", "");
 					changePage(pagename);
 				}
 	        }

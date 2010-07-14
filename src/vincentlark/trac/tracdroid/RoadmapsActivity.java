@@ -1,22 +1,15 @@
 package vincentlark.trac.tracdroid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
-
-import vincentlark.trac.tracdroid.ThreadedListActivity.EfficientAdapter;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Filterable;
 import android.widget.TextView;
 
 
@@ -24,7 +17,10 @@ public class RoadmapsActivity extends ThreadedListActivity {
 	
 	// Today
 	private static Date today = new Date();
+
+	static Vector<HashMap> cached_data = new Vector<HashMap>();
 	static Vector<HashMap> data = new Vector<HashMap>();
+	static String[] listFilters = {};
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,15 +32,45 @@ public class RoadmapsActivity extends ThreadedListActivity {
 		adapter = new RoadmapsListAdapter(getApplicationContext());
 		setListAdapter(adapter);
 		
+		String[] defaultFilters = {"not-passed"};
+		setFilters(defaultFilters);
+		
 		startLongRunningOperation();
     }
 
+	protected void updateResultsInUi() {
+        // Back in the UI thread -- update our UI elements based on the data in mResults
+		data = new Vector<HashMap>();
+
+		Iterator it = cached_data.iterator ();
+		while (it.hasNext()) {
+			HashMap ms = (HashMap) it.next();
+			boolean add = true;
+			for (int f=0; f < listFilters.length; f++) {
+			
+			
+				if (listFilters[f].equals("not-passed"))
+					add &= (ms.get("due") != null &&  ((Date) ms.get("due")).getTime() > today.getTime());
+
+
+			}
+			if (add) data.add(ms);
+		}
+        adapter.notifyDataSetChanged();
+	}
+	
+	protected void setFilters(String[] filters) {
+		listFilters = filters;
+        mHandler.post(mUpdateResults);
+	}
+	
     protected void startLongRunningOperation() {
 
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
-            public void run() {
-            	data = TracDroid.server.listRoadmaps();
+            @SuppressWarnings("unchecked")
+			public void run() {
+            	cached_data = data = TracDroid.server.listRoadmaps();
                 mHandler.post(mUpdateResults);
             }
         };
@@ -62,6 +88,8 @@ public class RoadmapsActivity extends ThreadedListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+        case R.id.roadmaps_menu_home:
+        	return true;
         case R.id.roadmaps_menu_settings:
         	startActivity(new Intent().setClass(getApplicationContext(), TracDroidPreferences.class));
         	return true;
@@ -87,7 +115,7 @@ public class RoadmapsActivity extends ThreadedListActivity {
 			HashMap milestone = data.get(position);
 			String due;
 	          
-			Log.d("DATE", (String) milestone.get("name"));
+			
 			if (milestone.get("due") == null) {
 				due = "No date set";
 			}
