@@ -7,14 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Filterable;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class TicketsActivity extends ThreadedListActivity {
@@ -27,6 +25,18 @@ public class TicketsActivity extends ThreadedListActivity {
 
 		TextView title = (TextView) findViewById(R.id.list_title);
 		title.setText("Tickets changes today");
+		
+		ListView list = (ListView) this.findViewById(android.R.id.list);
+		list.setOnItemClickListener(new ListView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				// Lauch TicketActivity for that ticket
+				Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
+				intent.putExtra("ticket_id", 1382);
+				startActivity(intent);
+			}
+		});
 		
 		adapter = new TicketListAdapter(getApplicationContext());
 		setListAdapter(adapter);

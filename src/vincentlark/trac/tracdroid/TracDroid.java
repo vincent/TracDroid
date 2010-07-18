@@ -105,11 +105,6 @@ public class TracDroid extends TabActivity {
 		}
 	}
 
-	public void onResume() {
-		super.onResume();
-
-	}
-
 	public static String join(AbstractCollection<String> s, String delimiter) {
 		if (s.isEmpty()) return "";
 		Iterator<String> iter = s.iterator();

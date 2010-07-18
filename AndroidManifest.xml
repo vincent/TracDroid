@@ -32,6 +32,10 @@
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.NoTitleBar">
         </activity>
+        <activity android:name=".TicketActivity"
+                  android:label="@string/app_name"
+                  android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
         <activity android:name=".TimelineActivity"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.NoTitleBar">

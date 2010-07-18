@@ -1,6 +1,7 @@
 package vincentlark.trac.tracdroid;
 
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -52,8 +53,8 @@ public class TracServer {
     	return (String[]) methods.toArray(new String[methods.size()]);
     }
 	
-	public Vector listRoadmaps() {
-    	Vector roadmaps = new Vector();
+	public Vector<HashMap> listRoadmaps() {
+    	Vector<HashMap> roadmaps = new Vector<HashMap>();
         try {
         	Vector<HashMap> method_signs = new Vector<HashMap>();
 
@@ -65,7 +66,7 @@ public class TracServer {
                 	String[] params = new String[1];
                 	params[0] = methods_obj[i].toString();
 
-                	HashMap signature = new HashMap();
+                	HashMap<String,Object> signature = new HashMap<String,Object>();
                 	signature.put("methodName", "ticket.milestone.get");
                 	signature.put("params", params);
                 	method_signs.add(signature);
@@ -79,7 +80,7 @@ public class TracServer {
         	for (int i = 0;  i < methods_results.length;  i++) {
         		Object[] ticket_change_obj = (Object[]) methods_results[i];
         		
-        		HashMap milestone = (HashMap) ticket_change_obj[0];
+        		HashMap<String,Object> milestone = (HashMap<String,Object>) ticket_change_obj[0];
         		if (!(milestone.get("due") instanceof Date)) {
         			milestone.put("due", null);
         		}
@@ -117,9 +118,9 @@ public class TracServer {
     	return (String[]) methods.toArray(new String[methods.size()]);
     }
 
-	public Vector getRecentTicketChanges(Date since) {
+	public Vector<HashMap> getRecentTicketChanges(Date since) {
 		Log.d("PROFILING", "get tickets");
-		Vector recent_changes = new Vector();
+		Vector<HashMap> recent_changes = new Vector<HashMap>();
         try {
 
         	Vector<HashMap> method_signs = new Vector<HashMap>();
@@ -132,7 +133,7 @@ public class TracServer {
                 	Integer[] params = new Integer[1];
                 	params[0] = ticket_ids[i] = Integer.decode(methods_obj[i].toString());
 
-                	HashMap signature = new HashMap();
+                	HashMap<String,Object> signature = new HashMap<String,Object>();
                 	signature.put("methodName", "ticket.changeLog");
                 	signature.put("params", params);
                 	method_signs.add(signature);
@@ -145,7 +146,7 @@ public class TracServer {
 			Log.d("PROFILING", "multicall end");
 
         	for (int i = 0;  i < methods_results.length;  i++) {
-        		HashMap ticket_change = new HashMap();
+        		HashMap<String,Object> ticket_change = new HashMap();
         		Object[] ticket_change_obj = (Object[]) methods_results[i];
         		ticket_change_obj = (Object[]) ticket_change_obj[0];
         		ticket_change_obj = (Object[]) ticket_change_obj[ ticket_change_obj.length - 1 ];
@@ -164,9 +165,77 @@ public class TracServer {
 			e.printStackTrace();
 		}
     	
-    	//return (Integer[]) ticket_ids.toArray(new Integer[ticket_ids.size()]);
 		return recent_changes;
     }
+
+	public HashMap<String,Object> getTicket(int ticket_id) {
+		HashMap<String,Object> ticket = null;
+		HashMap<String,Object> ticket_actions;
+		
+    	try {
+    		// Fetch a ticket. Returns [id, time_created, time_changed, attributes]
+			Object[] ticket_obj = (Object[]) client.call("ticket.get", ticket_id);
+
+			if (ticket_obj.length > 0) {
+				ticket = new HashMap<String,Object>();
+				ticket.put("id", (Integer) ticket_obj[0]);
+				ticket.put("time_created", (Date) ticket_obj[1]);
+				ticket.put("time_changed", (Date) ticket_obj[2]);
+				ticket.put("attributes", (HashMap<String,Object>) ticket_obj[3]);
+			}
+			
+			Object[] actions = (Object[]) client.call("ticket.getActions", ticket_id);
+			if (actions.length > 0) {
+				ticket_actions = new HashMap<String,Object>();
+				HashMap<String,Object> ticket_action = new HashMap<String,Object>();
+				
+				for (int i=0; i < actions.length; i++) {
+					ticket_action.clear();
+					
+					Object[] action = (Object[]) actions[i];
+					
+					ticket_action.put("action", (String) action[0]);
+					ticket_action.put("label", (String) action[1]);
+					ticket_action.put("hints", (String) action[2]);
+					
+					HashMap<String,Object> inputFields = null;
+					Object[] inputFields_obj = (Object[]) action[3];
+					if (inputFields_obj.length > 0) {
+						inputFields = new HashMap<String,Object>();
+						HashMap<String,Object> inputField = new HashMap<String,Object>();
+
+						for (int j=0; j < inputFields_obj.length; j++) {
+							inputField.clear();
+							Object[] inputField_obj = (Object[]) inputFields_obj[j];
+							
+							inputField.put("name", (String) inputField_obj[0]);
+							inputField.put("value", (String) inputField_obj[1]);
+							
+							Vector<String> options = null;
+							Object[] options_obj = (Object[]) inputField_obj[2];
+							
+							if (options_obj.length > 0) {
+								options = new Vector<String>();
+								for (int k=0; k < options_obj.length; k++)
+									options.add((String) options_obj[k]);
+							}
+							inputField.put("options", options);
+
+							inputFields.put((String) inputField.get("name"), inputField);
+						}
+						ticket_action.put("input_fields", inputFields);
+					}
+					ticket_actions.put((String) ticket_action.get("action"), ticket_action.clone());
+				}
+				ticket.put("actions", ticket_actions.clone());
+			}
+
+    	} catch (XMLRPCException e) {
+			e.printStackTrace();
+		}
+		
+    	return ticket;
+	}
 	
 	public String getPageHTML(String pagename) {
 		return getPageHTML(pagename, null);
@@ -187,10 +256,10 @@ public class TracServer {
 		return getPageComplete(pagename, null);
 	}
 	public HashMap<String,String> getPageComplete(String pagename, Integer version) {
-		HashMap<String,String> result = new HashMap();
+		HashMap<String,String> result = new HashMap<String,String>();
 		Vector<HashMap> method_signs = new Vector<HashMap>();
 
-		HashMap method = new HashMap();
+		HashMap<String,Object> method = new HashMap<String,Object>();
 		String[] params = new String[1];
 		
 		method.put("methodName", "wiki.getPage");
@@ -199,7 +268,7 @@ public class TracServer {
 		method.put("params", params);
 		method_signs.add(method);
 		
-		method = new HashMap();
+		method = new HashMap<String,Object>();
 		params = new String[1];
 
 		method.put("methodName", "wiki.getPageHTML");
@@ -226,10 +295,10 @@ public class TracServer {
 		return result;
 	}
 	
-	public boolean putPage(String pagename, String content, HashMap attributes) {
+	public boolean putPage(String pagename, String content, HashMap<String, String> attrs) {
 		boolean success = false;
         try {
-        	Object res = client.call("wiki.putPage", pagename, content, attributes);
+        	Object res = client.call("wiki.putPage", pagename, content, attrs);
         	success = (res != null);
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
