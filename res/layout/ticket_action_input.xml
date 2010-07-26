@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ticket_action_input"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
+	
+	<!-- inputField name -->
+	<TextView 
+	    android:id="@+id/ticket_action_input_name"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:padding="15dp"
+	    android:layout_marginLeft="30dp"
+	    android:textSize="18sp"
+	    android:textColor="#fff"
+	    android:text="input name">
+	</TextView>
+
+	<EditText android:id="@+id/ticket_action_input_text" android:layout_width="wrap_content"  android:layout_height="wrap_content" android:visibility="gone"></EditText>
+	<Spinner android:id="@+id/ticket_action_input_options" android:layout_width="wrap_content"  android:layout_height="wrap_content" android:visibility="gone"></Spinner>
+	
+</LinearLayout>
