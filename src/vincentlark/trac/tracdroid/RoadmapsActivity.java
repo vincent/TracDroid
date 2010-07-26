@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -66,12 +67,15 @@ public class RoadmapsActivity extends ThreadedListActivity {
 	
     protected void startLongRunningOperation() {
 
+    	final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading roadmaps", true, true);
+    	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
             @SuppressWarnings("unchecked")
 			public void run() {
             	cached_data = data = TracDroid.server.listRoadmaps();
                 mHandler.post(mUpdateResults);
+                dialog.dismiss();
             }
         };
         t.start();

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -141,6 +142,8 @@ public class WikiActivity extends Activity {
     
     protected void changePage(final String pagename) {
 
+    	final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading wiki page", true, true);
+    	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
 
@@ -150,6 +153,7 @@ public class WikiActivity extends Activity {
         		data = TracDroid.server.getPageComplete(pagename);
         		mHandler.post(mUpdateResults);
         		current_page = pagename;
+        		dialog.dismiss();
             }
         };
         t.start();

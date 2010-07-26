@@ -1,7 +1,6 @@
 package vincentlark.trac.tracdroid;
 
 import java.security.Security;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -9,6 +8,9 @@ import java.util.Vector;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 
+import vincentlark.trac.Ticket;
+import vincentlark.trac.TicketAction;
+import vincentlark.trac.TicketChange;
 import android.util.Log;
 
 import com.byarger.exchangeit.EasySSLSocketFactory;
@@ -35,6 +37,24 @@ public class TracServer {
     	client.setBasicAuthentication(this.username, this.password);
 	}
 
+	public Vector<String> simpleListCall(String methodName) {
+		Vector<String> results = new Vector<String>();
+    	Object[] methods_obj;
+		try {
+			methods_obj = (Object[]) client.call(methodName);
+
+			for (int i = methods_obj.length-1;  i >= 0 ;  i--) {
+	            if (methods_obj[i] != null) {
+	            	results.add(methods_obj[i].toString());
+	            }
+	    	}
+		} catch (XMLRPCException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
 	public String[] listMethods() {
     	Vector<String> methods = new Vector<String>();
         try {
@@ -52,6 +72,14 @@ public class TracServer {
     	
     	return (String[]) methods.toArray(new String[methods.size()]);
     }
+
+	public Vector<String> listMilestones() {
+		return simpleListCall("ticket.milestone.getAll");
+	}
+	
+	public Vector<String> listTicketTypes() {
+		return simpleListCall("ticket.type.getAll");
+	}
 	
 	public Vector<HashMap> listRoadmaps() {
     	Vector<HashMap> roadmaps = new Vector<HashMap>();
@@ -146,16 +174,17 @@ public class TracServer {
 			Log.d("PROFILING", "multicall end");
 
         	for (int i = 0;  i < methods_results.length;  i++) {
-        		HashMap<String,Object> ticket_change = new HashMap();
+        		HashMap<String,Object> ticket_change = new HashMap<String,Object>();
         		Object[] ticket_change_obj = (Object[]) methods_results[i];
         		ticket_change_obj = (Object[]) ticket_change_obj[0];
+        		
+        		if (ticket_change_obj.length == 0) continue;
+        		
+        		// Get the last change
         		ticket_change_obj = (Object[]) ticket_change_obj[ ticket_change_obj.length - 1 ];
         		
-        		// (time, author, field, oldvalue, newvalue, permanent)[]
         		ticket_change.put("id", ticket_ids[i]);
-        		ticket_change.put("author", (String) ticket_change_obj[1]);
-        		ticket_change.put("oldvalue", (String) ticket_change_obj[2]);
-        		ticket_change.put("newvalue", (String) ticket_change_obj[3]);
+        		ticket_change.put("change", TicketChange.fromXMLRPC(ticket_change_obj));
         		
         		recent_changes.add(ticket_change);
         	}
@@ -168,66 +197,34 @@ public class TracServer {
 		return recent_changes;
     }
 
-	public HashMap<String,Object> getTicket(int ticket_id) {
-		HashMap<String,Object> ticket = null;
-		HashMap<String,Object> ticket_actions;
+	public Ticket getTicket(int ticket_id) {
+		Ticket ticket = null;
+		HashMap<String, TicketAction> ticket_actions;
 		
     	try {
     		// Fetch a ticket. Returns [id, time_created, time_changed, attributes]
 			Object[] ticket_obj = (Object[]) client.call("ticket.get", ticket_id);
 
 			if (ticket_obj.length > 0) {
-				ticket = new HashMap<String,Object>();
-				ticket.put("id", (Integer) ticket_obj[0]);
-				ticket.put("time_created", (Date) ticket_obj[1]);
-				ticket.put("time_changed", (Date) ticket_obj[2]);
-				ticket.put("attributes", (HashMap<String,Object>) ticket_obj[3]);
-			}
+				ticket = Ticket.fromXMLRPC_ticket_get(ticket_obj);
 			
-			Object[] actions = (Object[]) client.call("ticket.getActions", ticket_id);
-			if (actions.length > 0) {
-				ticket_actions = new HashMap<String,Object>();
-				HashMap<String,Object> ticket_action = new HashMap<String,Object>();
-				
-				for (int i=0; i < actions.length; i++) {
-					ticket_action.clear();
+				Object[] changlelog_objs = (Object[]) client.call("ticket.changeLog", ticket_id);
+				Vector<TicketChange> changelog = new Vector<TicketChange>();
+	        	for (int i = 0;  i < changlelog_objs.length;  i++) {
+	        		changelog.add(TicketChange.fromXMLRPC((Object[]) changlelog_objs[i]));
+	        	}
+	        	ticket.setChangeLog(changelog);
+	
+				Object[] actions = (Object[]) client.call("ticket.getActions", ticket_id);
+				if (actions.length > 0) {
+					ticket_actions = new HashMap<String,TicketAction>();
 					
-					Object[] action = (Object[]) actions[i];
-					
-					ticket_action.put("action", (String) action[0]);
-					ticket_action.put("label", (String) action[1]);
-					ticket_action.put("hints", (String) action[2]);
-					
-					HashMap<String,Object> inputFields = null;
-					Object[] inputFields_obj = (Object[]) action[3];
-					if (inputFields_obj.length > 0) {
-						inputFields = new HashMap<String,Object>();
-						HashMap<String,Object> inputField = new HashMap<String,Object>();
-
-						for (int j=0; j < inputFields_obj.length; j++) {
-							inputField.clear();
-							Object[] inputField_obj = (Object[]) inputFields_obj[j];
-							
-							inputField.put("name", (String) inputField_obj[0]);
-							inputField.put("value", (String) inputField_obj[1]);
-							
-							Vector<String> options = null;
-							Object[] options_obj = (Object[]) inputField_obj[2];
-							
-							if (options_obj.length > 0) {
-								options = new Vector<String>();
-								for (int k=0; k < options_obj.length; k++)
-									options.add((String) options_obj[k]);
-							}
-							inputField.put("options", options);
-
-							inputFields.put((String) inputField.get("name"), inputField);
-						}
-						ticket_action.put("input_fields", inputFields);
+					for (int i=0; i < actions.length; i++) {
+						TicketAction ticket_action = TicketAction.fromXMLRPC((Object[]) actions[i]);
+						ticket_actions.put((String) ticket_action.action, ticket_action);
 					}
-					ticket_actions.put((String) ticket_action.get("action"), ticket_action.clone());
+					ticket.setActions(ticket_actions);
 				}
-				ticket.put("actions", ticket_actions.clone());
 			}
 
     	} catch (XMLRPCException e) {

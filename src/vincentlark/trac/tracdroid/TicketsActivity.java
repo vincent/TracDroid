@@ -3,6 +3,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Vector;
 
+import vincentlark.trac.TicketChange;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,10 +32,14 @@ public class TicketsActivity extends ThreadedListActivity {
 		list.setOnItemClickListener(new ListView.OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				// Lauch TicketActivity for that ticket
+				if (data.size() < position) return;
+				
+				HashMap<String,Object> ticket = data.get(position);
+				
 				Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
-				intent.putExtra("ticket_id", 1382);
+				intent.putExtra("ticket_id", (Integer) ticket.get("id"));
 				startActivity(intent);
 			}
 		});
@@ -46,6 +52,8 @@ public class TicketsActivity extends ThreadedListActivity {
 
     protected void startLongRunningOperation() {
 
+    	final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading recent ticket changes", true, true);
+    	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
             public void run() {
@@ -55,6 +63,7 @@ public class TicketsActivity extends ThreadedListActivity {
 				cal.add(Calendar.HOUR, -48);
 				data = TracDroid.server.getRecentTicketChanges( cal.getTime() );
 				mHandler.post(mUpdateResults);
+				dialog.dismiss();
             }
         };
         t.start();
@@ -89,7 +98,8 @@ public class TicketsActivity extends ThreadedListActivity {
 		protected String getItemTextLine1(Integer position) {
 			if (data.size() > 0) {
 	          HashMap ticket_change = data.get(position);
-	          return "#"+ticket_change.get("id")+" by "+ticket_change.get("author");
+	          TicketChange change = (TicketChange) ticket_change.get("change");
+	          return "#"+ticket_change.get("id")+" by "+ change.author;
 			}
 			else return "No recent ticket changes";
 		}
@@ -98,7 +108,8 @@ public class TicketsActivity extends ThreadedListActivity {
 		protected String getItemTextLine2(Integer position) {
 			if (data.size() > 0) {
 	          HashMap ticket_change = data.get(position);
-	          return ticket_change.get("oldvalue") + " => " + ticket_change.get("newvalue");
+	          TicketChange change = (TicketChange) ticket_change.get("change");
+	          return ticket_change.get("oldvalue") + " => " + change.newv;
 			}
 			else return "";
 		}
