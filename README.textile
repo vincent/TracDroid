@@ -6,7 +6,7 @@ h2. Current objectives
  * view roadmaps
  * view complete ticket infos (details, changelog actions)
 
-h2.Screenshots
+h2. Screenshots
  h3. Roadmaps view
  !!
  h3. Ticket view
