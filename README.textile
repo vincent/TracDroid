@@ -7,17 +7,17 @@ h2. Current objectives
  * view complete ticket infos (details, changelog actions)
 
 h2. Screenshots
- h3. Ticket view
- !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!
+h3. Ticket view
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!
 
- h3. Tickets timeline view
- !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changes.png!
+h3. Tickets timeline view
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changes.png!
 
- h3. Ticket changelog
- !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!
+h3. Ticket changelog
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!
 
- h3. Wiki view
- !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/wiki.png!
+h3. Wiki view
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/wiki.png!
 
 
 
