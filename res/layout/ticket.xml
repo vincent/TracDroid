@@ -14,7 +14,7 @@ android:layout_width="fill_parent" android:layout_height="fill_parent">
 		  android:orientation="vertical">
 			<TextView android:id="@+id/ticket_changelog_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Changelog" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView>
 
-			<ScrollView android:layout_width="wrap_content" android:layout_height="fill_parent">
+			<ScrollView android:id="@+id/ticket_changelog_scrollable" android:layout_width="wrap_content" android:layout_height="fill_parent">
 				<LinearLayout android:id="@+id/ticket_changelog" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical"></LinearLayout>
 			</ScrollView>
 			<Button android:id="@+id/ticket_changelog_back" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="back >" android:layout_gravity="bottom"></Button>

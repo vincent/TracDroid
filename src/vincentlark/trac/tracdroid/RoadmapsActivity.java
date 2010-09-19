@@ -124,7 +124,7 @@ public class RoadmapsActivity extends ThreadedListActivity {
 				due = "No date set";
 			}
 			else {
-				due = "due " + PrettyDateDiff.between(today, (Date)milestone.get("due"));
+				due = "due " + PrettyDate.between(today, (Date)milestone.get("due"));
 			}
 			return due;
 		}

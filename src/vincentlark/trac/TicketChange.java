@@ -2,7 +2,7 @@ package vincentlark.trac;
 
 import java.util.Date;
 
-import vincentlark.trac.tracdroid.PrettyDateDiff;
+import vincentlark.trac.tracdroid.PrettyDate;
 
 public class TicketChange {
 
@@ -30,7 +30,7 @@ public class TicketChange {
 	
 	public String getNiceTitle() {
 		String title = "";
-		String date = PrettyDateDiff.between(new Date(), time);
+		String date = PrettyDate.between(new Date(), time);
 		
 		if (field.equals("comment") || field.equals("description")) {
 			if (field.equals("comment"))

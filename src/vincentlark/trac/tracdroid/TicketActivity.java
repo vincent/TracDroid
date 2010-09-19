@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +59,7 @@ public class TicketActivity extends Activity {
 		// Set the ViewFlipper
 		ViewFlipper flipper = (ViewFlipper) findViewById(R.id.ticket_viewflipper);
 		flipper.setDisplayedChild(1);
+		flipper.getChildAt(1).scrollTo(0, 0);
 		
 		// Title
 		((TextView) findViewById(R.id.ticket_title)).setText( "#" + ticket.id + ": " + ticket.attributes.summary);
@@ -91,7 +93,7 @@ public class TicketActivity extends Activity {
 		});
 		
 		// Reported by ..
-		String created = PrettyDateDiff.between(new Date(), ticket.dateCreated);
+		String created = PrettyDate.between(new Date(), ticket.dateCreated);
 		((TextView) findViewById(R.id.ticket_report)).setText(String.format("reported by %s %s", ticket.attributes.reporter, created));
 		
 		// Owned by ..
@@ -273,6 +275,8 @@ public class TicketActivity extends Activity {
 		ViewFlipper flipper = (ViewFlipper) findViewById(R.id.ticket_viewflipper);
 		flipper.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.push_up_in));
 		flipper.setDisplayedChild(view);
+		flipper.scrollTo(0, 0);
+		flipper.getChildAt(view).scrollTo(0, 0);
     }
     
     private String inputFieldPrettyName(String name) {

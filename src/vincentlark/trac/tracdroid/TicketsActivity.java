@@ -20,24 +20,28 @@ import android.widget.TextView;
 public class TicketsActivity extends ThreadedListActivity {
 
 	static Vector<HashMap> data = new Vector<HashMap>();
+	int hours_timeback = 48;
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		setContentView(R.layout.simple_list);
 
-		TextView title = (TextView) findViewById(R.id.list_title);
-		title.setText("Tickets changes today");
+		updateTitle();
 		
 		ListView list = (ListView) this.findViewById(android.R.id.list);
 		list.setOnItemClickListener(new ListView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				// Lauch TicketActivity for that ticket
-				if (data.size() < position) return;
+				int mySize = data.size();
+				if (mySize <= position) {
+					hours_timeback += 24;
+					startLongRunningOperation();
+					return;
+				}
 				
 				HashMap<String,Object> ticket = data.get(position);
-				
+				// Lauch TicketActivity for that ticket
 				Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
 				intent.putExtra("ticket_id", (Integer) ticket.get("id"));
 				startActivity(intent);
@@ -49,20 +53,37 @@ public class TicketsActivity extends ThreadedListActivity {
 
 		startLongRunningOperation();
 	}
+	
+	protected void updateTitle() {
+		((TextView) findViewById(R.id.list_title)).setText(String.format("Tickets changes since %s", PrettyDate.hours(hours_timeback)));
+	}
 
-    protected void startLongRunningOperation() {
+	protected void updateResultsInUi() {
+        // Back in the UI thread -- update our UI elements based on the data in mResults
+        adapter.notifyDataSetChanged();
+        updateTitle();
+	}
 
-    	final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading recent ticket changes", true, true);
+	protected void startLongRunningOperation() {
+
+    	final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading changes", true, true);
     	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
             public void run() {
-            	Log.d("PROFILING", "start thread");
-            	
-            	Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.HOUR, -48);
-				data = TracDroid.server.getRecentTicketChanges( cal.getTime() );
-				mHandler.post(mUpdateResults);
+            	data.clear();
+    			Calendar cal = Calendar.getInstance();
+    			while (data.size() == 0) {
+					cal.add(Calendar.HOUR, -hours_timeback);
+					data = TracDroid.server.getRecentTicketChanges( cal.getTime() );
+					if (data.size() > 0) {
+						mHandler.post(mUpdateResults);
+					}
+					else if (hours_timeback < 168) {
+						hours_timeback += 48;
+						dialog.setTitle(String.format("Loading changes since", PrettyDate.hours(hours_timeback)));
+					}
+    			}
 				dialog.dismiss();
             }
         };
@@ -96,20 +117,24 @@ public class TicketsActivity extends ThreadedListActivity {
 
 		@Override
 		protected String getItemTextLine1(Integer position) {
-			if (data.size() > 0) {
+			int mySize = data.size();
+			if (mySize == 0) {
+				return String.format("No ticket changes since %s\nload until most recent changes ?", PrettyDate.hours(hours_timeback));
+			}
+			if (mySize > position) {
 	          HashMap ticket_change = data.get(position);
 	          TicketChange change = (TicketChange) ticket_change.get("change");
 	          return "#"+ticket_change.get("id")+" by "+ change.author;
 			}
-			else return "No recent ticket changes";
+			else return "Load one day back";
 		}
 
 		@Override
 		protected String getItemTextLine2(Integer position) {
-			if (data.size() > 0) {
+			if (data.size() > position) {
 	          HashMap ticket_change = data.get(position);
 	          TicketChange change = (TicketChange) ticket_change.get("change");
-	          return ticket_change.get("oldvalue") + " => " + change.newv;
+	          return change.field + ": " + change.newv;
 			}
 			else return "";
 		}
@@ -123,7 +148,7 @@ public class TicketsActivity extends ThreadedListActivity {
         @Override
         public int getCount() {
           // TODO Auto-generated method stub
-          return Math.max(data.size(), 1);
+          return data.size() + 1;
         }
 
         @Override
