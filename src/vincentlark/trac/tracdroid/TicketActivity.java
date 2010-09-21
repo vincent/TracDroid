@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -25,17 +27,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class TicketActivity extends Activity {
 
 	public int ticket_id;
 	static Ticket ticket;
+	static HashMap<String,String> current_changes;
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +51,20 @@ public class TicketActivity extends Activity {
 	}
 
 	public boolean loadTicket(int id) {
-		ProgressDialog dialog = ProgressDialog.show(this, "", "Loading wiki page", true, true);
-		ticket = TracDroid.server.getTicket(id);
-		
-		if (ticket.id == 0) {
-			dialog.dismiss();
-			return false;
+		ProgressDialog dialog = ProgressDialog.show(this, "", "Loading ticket", true, true);
+		Ticket a_ticket = TracDroid.server.getTicket(id);
+		dialog.dismiss();
+		if (a_ticket != null) {
+			this.loadTicket(a_ticket);
+			return true;
 		}
-
+		return false;
+	}
+		
+	public boolean loadTicket(Ticket a_ticket) {
+		ticket = a_ticket;
+		current_changes = new HashMap<String,String>();
+		
 		// Set the ViewFlipper
 		ViewFlipper flipper = (ViewFlipper) findViewById(R.id.ticket_viewflipper);
 		flipper.setDisplayedChild(1);
@@ -84,9 +93,17 @@ public class TicketActivity extends Activity {
 			@Override
 			public boolean onLongClick(View v) {
 				((EditText) v).setVisibility(View.GONE);
-
 				TextView desc = (TextView) findViewById(R.id.ticket_desc);
-				desc.setText(((EditText) v).getText());
+				String new_description = ((EditText) v).getText().toString();
+				
+				desc.setText(new_description);
+				if (new_description.equals(ticket.attributes.description)) {
+					current_changes.remove("description");
+				}
+				else {
+					current_changes.put("description", new_description);
+				}
+				
 				desc.setVisibility(View.VISIBLE);
 				return true;
 			}
@@ -175,7 +192,7 @@ public class TicketActivity extends Activity {
 				Iterator it = inputFields.keySet().iterator();
 				while (it.hasNext()) {
 					String inputName = (String) it.next();
-					HashMap<String, Object> input = (HashMap<String, Object>) inputFields.get(inputName);
+					final HashMap<String, Object> input = (HashMap<String, Object>) inputFields.get(inputName);
 	
 					// Inflate a layout to align fields
 					LinearLayout actionInputPanel = (LinearLayout) View.inflate(this, R.layout.ticket_action_input, (ViewGroup) actionPanel);
@@ -184,7 +201,7 @@ public class TicketActivity extends Activity {
 				    TextView inputLabel = (TextView) actionInputPanel.findViewById(R.id.ticket_action_input_name);
 				    inputLabel.setText(inputFieldPrettyName((String) input.get("name")));
 					
-				    View inputField;
+				    final View inputField;
 					// Input has options, use a spinner
 					if (input.get("options") != null) {
 						
@@ -194,6 +211,30 @@ public class TicketActivity extends Activity {
 						inputField = actionInputPanel.findViewById(R.id.ticket_action_input_options);
 						((Spinner) inputField).setAdapter(new ArrayAdapter(getApplicationContext(), R.layout.list_item_black, arUsers));
 						((Spinner) inputField).setSelection(options.indexOf( input.get("value") ));
+						((Spinner) inputField).setOnItemSelectedListener(new OnItemSelectedListener() {
+						    @Override
+						    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+						        String new_input_value = (String) ((Spinner) inputField).getAdapter().getItem(position);
+								if (new_input_value.equals(input.get("value"))) {
+									current_changes.remove("action");
+									current_changes.remove((String) input.get("name"));
+								}
+								else {
+									String[] action_names = ((String) input.get("name")).split("_");
+									String action_name = action_names[1] + "_" + action_names[2];
+									
+									current_changes.put("action", action_name);
+									current_changes.put((String) input.get("name"), new_input_value);
+								}
+						    }
+
+						    @Override
+						    public void onNothingSelected(AdapterView<?> parentView) {
+								current_changes.remove("action");
+								current_changes.remove((String) input.get("name"));
+						    }
+						});
+						
 					}
 					// Input hasn't options, use an EditText
 					else {
@@ -213,41 +254,62 @@ public class TicketActivity extends Activity {
 		// Type
 		Vector<String> types = TracDroid.server.listTicketTypes();
 		String[] arTypes = types.toArray(new String[types.size()]);
-		Spinner typeField = (Spinner) findViewById(R.id.ticket_spin_type);
+		final Spinner typeField = (Spinner) findViewById(R.id.ticket_spin_type);
 		typeField.setAdapter(new ArrayAdapter(getApplicationContext(), R.layout.list_item_black, arTypes));
-		//typeField.setSelection(types.indexOf( ticket.type ));
+		typeField.setOnItemSelectedListener(new OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+		    	String new_type = (String) typeField.getAdapter().getItem(position);
+		    	/* TODO
+				if (new_type.equals(ticket.attributes.)) {
+					current_changes.remove("type");
+				}
+				else {
+					current_changes.put("type", new_description);
+				}
+		        */
+		        current_changes.put("type", new_type);
+		    }
+
+		    @Override
+		    public void onNothingSelected(AdapterView<?> parentView) {
+				current_changes.remove("type");
+		    }
+		});
 		
 		// Milestone
 		Vector<String> milestones = TracDroid.server.listMilestones();
 		String[] arMilestones = milestones.toArray(new String[milestones.size()]);
-		Spinner milestoneField = (Spinner) findViewById(R.id.ticket_spin_milestone);
+		final Spinner milestoneField = (Spinner) findViewById(R.id.ticket_spin_milestone);
 		milestoneField.setAdapter(new ArrayAdapter(getApplicationContext(), R.layout.list_item_black, arMilestones));
 		milestoneField.setSelection(milestones.indexOf( ticket.attributes.milestone ));
+		milestoneField.setOnItemSelectedListener(new OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+		        String new_milestone = (String) milestoneField.getAdapter().getItem(position);
+				if (new_milestone.equals(ticket.attributes.milestone)) {
+					current_changes.remove("milestone");
+				}
+				else {
+					current_changes.put("milestone", new_milestone);
+				}
+		    }
+
+		    @Override
+		    public void onNothingSelected(AdapterView<?> parentView) {
+				current_changes.remove("milestone");
+		    }
+		});
 		
-		// Handle view switchers
+		// Handle view switcher
 		findViewById(R.id.ticket_link_changelog).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				switchView(0);
 			}
 		});
-		/*
-		findViewById(R.id.ticket_link_actions).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				switchView(2);
-			}
-		});
-		*/
 		
-		dialog.dismiss();
 		return true;
-	}
-	
-	protected void saveCurrentTicket() {
-		if (ticket == null || ticket.id == 0) return;
-		
-		
 	}
 	
     @Override
@@ -262,6 +324,19 @@ public class TicketActivity extends Activity {
         // Handle item selection
         switch (item.getItemId()) {
         case R.id.ticket_menu_save:
+        	if (current_changes.size() > 0) {
+	    		ProgressDialog dialog = ProgressDialog.show(this, "", "Updating ticket", true, true);
+	    		Log.d("ticket.update", current_changes.toString());
+	        	Ticket new_ticket = TracDroid.server.updateTicket(ticket.id, current_changes);
+	        	if (new_ticket != null) {
+	        		dialog.dismiss();
+	    			Toast.makeText(getApplicationContext(), "Ticket updated", Toast.LENGTH_SHORT).show();
+	        		current_changes.clear();
+	        	}
+        	}
+        	else {
+        		Toast.makeText(getApplicationContext(), "Nothing changed", Toast.LENGTH_SHORT).show();
+        	}
         	return true;
         case R.id.tickets_menu_settings:
         	startActivity(new Intent().setClass(getApplicationContext(), TracDroidPreferences.class));

@@ -234,6 +234,19 @@ public class TracServer {
     	return ticket;
 	}
 	
+	public Ticket updateTicket(int ticket_id, HashMap<String,String> attributes) {
+        try {
+        	Object[] ticket_obj = (Object[]) client.call("ticket.update", ticket_id, "xmlrpc test", attributes);
+        	return Ticket.fromXMLRPC_ticket_get(ticket_obj);
+        	
+		} catch (XMLRPCException e) {
+			Log.e("error", "error", e);
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public String getPageHTML(String pagename) {
 		return getPageHTML(pagename, null);
 	}

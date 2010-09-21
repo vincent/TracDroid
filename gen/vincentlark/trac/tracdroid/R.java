@@ -55,10 +55,10 @@ public final class R {
         public static final int ticket_action_input_text=0x7f090018;
         public static final int ticket_actions=0x7f090015;
         public static final int ticket_actions_title=0x7f090014;
-        public static final int ticket_changelog=0x7f090009;
-        public static final int ticket_changelog_back=0x7f09000a;
-        public static final int ticket_changelog_scrollable=0x7f090008;
-        public static final int ticket_changelog_title=0x7f090007;
+        public static final int ticket_changelog=0x7f09000a;
+        public static final int ticket_changelog_back=0x7f09000b;
+        public static final int ticket_changelog_scrollable=0x7f090009;
+        public static final int ticket_commit_button=0x7f090007;
         public static final int ticket_desc=0x7f09000f;
         public static final int ticket_desc_edit=0x7f090010;
         public static final int ticket_link_changelog=0x7f090013;
@@ -71,8 +71,8 @@ public final class R {
         public static final int ticket_spin_milestone=0x7f090012;
         public static final int ticket_spin_type=0x7f090011;
         public static final int ticket_status=0x7f09000e;
-        public static final int ticket_title=0x7f09000b;
-        public static final int ticket_viewflipper=0x7f090006;
+        public static final int ticket_title=0x7f090006;
+        public static final int ticket_viewflipper=0x7f090008;
         public static final int tickets_menu=0x7f09002a;
         public static final int tickets_menu_edit=0x7f09002d;
         public static final int tickets_menu_home=0x7f09002b;
