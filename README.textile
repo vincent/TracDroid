@@ -3,8 +3,8 @@ is a simple Trac browser for android.
 
 h2. Current objectives
  * view and edit wiki pages
+ * view and edit complete ticket infos (details, changelog actions)
  * view roadmaps
- * view complete ticket infos (details, changelog actions)
 
 h2. Screenshots
 
@@ -20,5 +20,6 @@ h3. Ticket changelog
 h3. Wiki view
 !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/wiki.png!
 
-
+h2. Install
+!http://github.com/vincent/TracDroid/raw/master/doc/tracdroid_qrcode_m.png.png!
 
