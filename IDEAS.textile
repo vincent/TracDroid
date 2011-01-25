@@ -1,0 +1,33 @@
+h1. Cache
+ * backend? CacheManager, ...
+
+h1. Layout
+ * one-row title (Foursquare layout)
+ * not always tabs, select views without
+
+h1. Views
+ * "Me" view
+   * my tickets
+   * history
+   * permissions
+ 
+ * Ticket view
+   * add me in "cc" field, get email-notified
+ 
+ * admin view
+   * grant permissions 
+ 
+ * changeset view
+   * Foursquare view
+   * html diff ala github
+     * https://github.com/mangos/mangos/commit/4f56f061fe02619d90bd35a8ae9a9055af1279c4
+     * http://snowtide.com/jsdifflib#overview
+ 
+ * "Create ticket" should be a simple view
+   * bug description, 1st line=subject, severity/component, milestone
+   * then TicketActivity
+
+h1. Garage
+ * take photo, create/attach ticket
+ * select pictures for component, display in ticket timeline
+
