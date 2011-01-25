@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import vincentlark.trac.Ticket;
 import vincentlark.trac.TicketAction;
+import vincentlark.trac.TicketAttributes;
 import vincentlark.trac.TicketChange;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -36,7 +37,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class TicketActivity extends Activity {
 
-	public int ticket_id;
 	static Ticket ticket;
 	static HashMap<String,String> current_changes;
 
@@ -45,13 +45,15 @@ public class TicketActivity extends Activity {
 		setContentView(R.layout.ticket);
 
 		Bundle params = this.getIntent().getExtras();
-		
-		if (! loadTicket((int) params.getInt("ticket_id")))
-			Toast.makeText(getApplicationContext(), "Sorry, cannot fetch this ticket", Toast.LENGTH_SHORT).show();
+		int ticket_id = (int) params.getInt("ticket_id");
+		if (ticket_id == 0)
+			loadTicket(new Ticket(ticket_id, new Date(), new Date(), new TicketAttributes("", "", TracDroid.server.username, TracDroid.server.username, "", "", "", "", "")));
+		else if (!loadTicket(ticket_id))
+			Toast.makeText(getApplicationContext(), this.getString(R.string.unfetcheable_ticket), Toast.LENGTH_SHORT).show();
 	}
 
 	public boolean loadTicket(int id) {
-		ProgressDialog dialog = ProgressDialog.show(this, "", "Loading ticket", true, true);
+		ProgressDialog dialog = ProgressDialog.show(this, "", this.getString(R.string.loading_ticket), true, true);
 		Ticket a_ticket = TracDroid.server.getTicket(id);
 		dialog.dismiss();
 		if (a_ticket != null) {
@@ -64,14 +66,56 @@ public class TicketActivity extends Activity {
 	public boolean loadTicket(Ticket a_ticket) {
 		ticket = a_ticket;
 		current_changes = new HashMap<String,String>();
+
+		final String new_text_value = this.getString(R.string.click_to_edit);
 		
 		// Set the ViewFlipper
 		ViewFlipper flipper = (ViewFlipper) findViewById(R.id.ticket_viewflipper);
 		flipper.setDisplayedChild(1);
 		flipper.getChildAt(1).scrollTo(0, 0);
 		
-		// Title
-		((TextView) findViewById(R.id.ticket_title)).setText( "#" + ticket.id + ": " + ticket.attributes.summary);
+		// Title, with longClick to edit
+		TextView title = (TextView) findViewById(R.id.ticket_title); 
+		title.setText(
+				  (ticket.id > 0 ? "#" + ticket.id + ":" : "") 
+				+ (ticket.attributes.summary.length() > 0 ? ticket.attributes.summary : new_text_value)
+		);
+		title.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				((TextView) v).setVisibility(View.GONE);
+
+				EditText title_edit = (EditText) findViewById(R.id.ticket_title_edit);
+				title_edit.setText(((TextView) v).getText());
+				title_edit.setVisibility(View.VISIBLE);
+				return true;
+			}
+		});
+		EditText titleEdit = (EditText) findViewById(R.id.ticket_title_edit);
+		titleEdit.setVisibility(View.GONE);
+		titleEdit.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				((EditText) v).setVisibility(View.GONE);
+				TextView title = (TextView) findViewById(R.id.ticket_title);
+				String new_summary = ((EditText) v).getText().toString();
+				
+				if (new_summary.trim().length()==0) {
+					new_summary = new_text_value;
+				}
+				if (new_summary.equals(ticket.attributes.summary)) {
+					current_changes.remove("summary");
+				}
+				else {
+					current_changes.put("summary", new_summary);
+				}
+				((EditText) v).setText(new_summary);
+				title.setText(new_summary);
+				
+				title.setVisibility(View.VISIBLE);
+				return true;
+			}
+		});
 
 		// Description, with longClick to edit
 		TextView desc = (TextView) findViewById(R.id.ticket_desc);
@@ -96,13 +140,17 @@ public class TicketActivity extends Activity {
 				TextView desc = (TextView) findViewById(R.id.ticket_desc);
 				String new_description = ((EditText) v).getText().toString();
 				
-				desc.setText(new_description);
+				if (new_description.trim().length()==0) {
+					new_description = "Click to edit";
+				}
 				if (new_description.equals(ticket.attributes.description)) {
 					current_changes.remove("description");
 				}
 				else {
 					current_changes.put("description", new_description);
 				}
+				((EditText) v).setText(new_description);
+				desc.setText(new_description);
 				
 				desc.setVisibility(View.VISIBLE);
 				return true;
@@ -111,13 +159,13 @@ public class TicketActivity extends Activity {
 		
 		// Reported by ..
 		String created = PrettyDate.between(new Date(), ticket.dateCreated);
-		((TextView) findViewById(R.id.ticket_report)).setText(String.format("reported by %s %s", ticket.attributes.reporter, created));
+		((TextView) findViewById(R.id.ticket_report)).setText(String.format(this.getString(R.string.reported_by_on), ticket.attributes.reporter, created));
 		
 		// Owned by ..
-		((TextView) findViewById(R.id.ticket_owner)).setText(String.format("owned by %s", ticket.attributes.owner));
+		((TextView) findViewById(R.id.ticket_owner)).setText(String.format(this.getString(R.string.owned_by), ticket.attributes.owner));
 		
 		// Current status
-		((TextView) findViewById(R.id.ticket_status)).setText(String.format("status : %s", ticket.attributes.status));
+		((TextView) findViewById(R.id.ticket_status)).setText(String.format(this.getString(R.string.status_is), ticket.attributes.status));
 		
 		// ChangeLog
 		Vector<TicketChange> changelog = (Vector<TicketChange>) ticket.changeLog;
@@ -132,12 +180,12 @@ public class TicketActivity extends Activity {
 			LinearLayout changelogItem = (LinearLayout) View.inflate(this, R.layout.ticket_changelog_item, null);
 			
 			//TextView title = (TextView) changelogItem.findViewById(R.id.changelog_item_title);
-			TextView title = new TextView(getApplicationContext());
-			changelogLayout.addView(title);
+			TextView titlev = new TextView(getApplicationContext());
+			changelogLayout.addView(titlev);
 			
 			if (field.equals("comment") || field.equals("description")) {
 			
-				title.setText(niceTitle);
+				titlev.setText(niceTitle);
 
 				//TextView text = (TextView) changelogItem.findViewById(R.id.changelog_item_text);
 				TextView text = new TextView(getApplicationContext());
@@ -145,13 +193,13 @@ public class TicketActivity extends Activity {
 				changelogLayout.addView(text);
 
 				// Show text when title is clicked
-				title.setOnClickListener(new OnClickListener(){
+				titlev.setOnClickListener(new OnClickListener(){
 					@Override
 					public void onClick(View v) { /* text.setVisibility(View.VISIBLE); */ }
 				});
 			}
 			else {
-				title.setText(niceTitle);
+				titlev.setText(niceTitle);
 			}
 			
 			changelogLayout.addView(changelogItem);
@@ -323,19 +371,35 @@ public class TicketActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+        case R.id.ticket_menu_new:
+			Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
+			intent.putExtra("ticket_id", new Integer(0));
+			startActivity(intent);
+        	return true;
         case R.id.ticket_menu_save:
         	if (current_changes.size() > 0) {
-	    		ProgressDialog dialog = ProgressDialog.show(this, "", "Updating ticket", true, true);
+	    		ProgressDialog dialog = ProgressDialog.show(this, "", this.getString(R.string.updating_ticket), true, true);
 	    		Log.d("ticket.update", current_changes.toString());
-	        	Ticket new_ticket = TracDroid.server.updateTicket(ticket.id, current_changes);
-	        	if (new_ticket != null) {
-	        		dialog.dismiss();
-	    			Toast.makeText(getApplicationContext(), "Ticket updated", Toast.LENGTH_SHORT).show();
-	        		current_changes.clear();
+	    		/* FIXME
+	    		if (ticket.id.equals("")) {
+	    			new_ticket_id = TracDroid.server.createTicket(((EditText) findViewById(R.id.ticket_title_edit)).getText().toString(), current_changes);
+		        	if (new_ticket_id > 0) {
+		        		dialog.dismiss();
+		    			Toast.makeText(getApplicationContext(), "Ticket created", Toast.LENGTH_SHORT).show();
+		        		current_changes.clear();
+		        	}
 	        	}
+	    		else */ {
+	    			Ticket new_ticket = TracDroid.server.updateTicket(ticket.id, current_changes);
+		        	if (new_ticket != null) {
+		        		dialog.dismiss();
+		    			Toast.makeText(getApplicationContext(), this.getString(R.string.ticket_updated), Toast.LENGTH_SHORT).show();
+		        		current_changes.clear();
+		        	}
+	    		}
         	}
         	else {
-        		Toast.makeText(getApplicationContext(), "Nothing changed", Toast.LENGTH_SHORT).show();
+        		Toast.makeText(getApplicationContext(), this.getString(R.string.nothing_changed), Toast.LENGTH_SHORT).show();
         	}
         	return true;
         case R.id.tickets_menu_settings:
@@ -356,7 +420,7 @@ public class TicketActivity extends Activity {
     
     private String inputFieldPrettyName(String name) {
     	if (name.equals("action_assigned_assigned_reassign_owner")) {
-    		name = "to ";
+    		name = this.getString(R.string.to)+" ";
     	}
     	else {
     		name = "> ";

@@ -6,4 +6,27 @@
 </string-array>
 <string-array name="prefTracServerValues"><item>new</item>
 </string-array>
+<string name="click_to_edit">Click to edit</string>
+<string name="_weeks">%s weeks</string>
+<string name="_days">%s days</string>
+<string name="_months">%s months</string>
+<string name="_years">%s years</string>
+<string name="unfetcheable_ticket">Sorry, cannot fetch this ticket</string>
+<string name="loading_ticket">Loading ticket</string>
+<string name="reported_by_on">reported by %s %s</string>
+<string name="owned_by">owned by %s</string>
+<string name="status_is">status : %s</string>
+<string name="updating_ticket">Updating ticket</string>
+<string name="ticket_updated">Ticket updated</string>
+<string name="nothing_changed">Nothing changed</string>
+<string name="to">to</string>
+<string name="tickects_changes_since">Tickets changes since %s</string>
+<string name="loading_changes">Loading changes</string>
+<string name="loading_changes_since">Loading changes since %s</string>
+<string name="no_changes_ask_load_more">No ticket changes since %s\nload until most recent changes ?</string>
+<string name="load_one_day_back">Load one day back</string>
+<string name="wiki_page_edited">Wiki page &quot;%s&quot; edited</string>
+<string name="oops">Oups, something goes wrong</string>
+<string name="cancel">Cancel</string>
+<string name="_by">%s by %s</string>
 </resources>

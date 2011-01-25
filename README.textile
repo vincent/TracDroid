@@ -6,6 +6,9 @@ h2. Current objectives
  * view and edit complete ticket infos (details, changelog actions)
  * view roadmaps
 
+h2. Requires
+ * "XmlRpcPlugin":http://trac-hacks.org/wiki/XmlRpcPlugin to be installed on trac instance
+
 h2. Screenshots
 
 h3. Ticket view

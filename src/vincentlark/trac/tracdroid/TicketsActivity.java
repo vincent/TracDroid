@@ -1,6 +1,7 @@
 package vincentlark.trac.tracdroid;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import vincentlark.trac.TicketChange;
@@ -41,10 +42,20 @@ public class TicketsActivity extends ThreadedListActivity {
 				}
 				
 				HashMap<String,Object> ticket = data.get(position);
-				// Lauch TicketActivity for that ticket
-				Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
-				intent.putExtra("ticket_id", (Integer) ticket.get("id"));
-				startActivity(intent);
+				TicketChange change = (TicketChange) ticket.get("change");
+				
+				if (ticket.get("excerpt") != null && ticket.get("excerpt").equals(true)) {
+					// Show a big description
+					ticket.put("excerpt", false);
+					data.set(position, ticket);
+					adapter.notifyDataSetChanged();
+				}
+				else {
+					// Lauch TicketActivity for that ticket
+					Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
+					intent.putExtra("ticket_id", (Integer) ticket.get("id"));
+					startActivity(intent);
+				}
 			}
 		});
 		
@@ -55,7 +66,7 @@ public class TicketsActivity extends ThreadedListActivity {
 	}
 	
 	protected void updateTitle() {
-		((TextView) findViewById(R.id.list_title)).setText(String.format("Tickets changes since %s", PrettyDate.hours(hours_timeback)));
+		((TextView) findViewById(R.id.list_title)).setText(String.format(this.getString(R.string.tickects_changes_since), PrettyDate.hours(hours_timeback)));
 	}
 
 	protected void updateResultsInUi() {
@@ -66,7 +77,7 @@ public class TicketsActivity extends ThreadedListActivity {
 
 	protected void startLongRunningOperation() {
 
-    	final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading changes", true, true);
+    	final ProgressDialog dialog = ProgressDialog.show(this, "", this.getString(R.string.loading_changes), true, true);
     	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
@@ -81,7 +92,7 @@ public class TicketsActivity extends ThreadedListActivity {
 					}
 					else if (hours_timeback < 168) {
 						hours_timeback += 48;
-						dialog.setTitle(String.format("Loading changes since", PrettyDate.hours(hours_timeback)));
+						dialog.setTitle(String.format(getApplicationContext().getString(R.string.loading_changes_since), PrettyDate.hours(hours_timeback)));
 					}
     			}
 				dialog.dismiss();
@@ -101,6 +112,11 @@ public class TicketsActivity extends ThreadedListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+        case R.id.tickets_menu_new:
+			Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
+			intent.putExtra("ticket_id", new Integer(0));
+			startActivity(intent);
+        	return true;
         case R.id.tickets_menu_settings:
         	startActivity(new Intent().setClass(getApplicationContext(), TracDroidPreferences.class));
         	return true;
@@ -119,14 +135,14 @@ public class TicketsActivity extends ThreadedListActivity {
 		protected String getItemTextLine1(Integer position) {
 			int mySize = data.size();
 			if (mySize == 0) {
-				return String.format("No ticket changes since %s\nload until most recent changes ?", PrettyDate.hours(hours_timeback));
+				return String.format(getApplicationContext().getString(R.string.no_changes_ask_load_more), PrettyDate.hours(hours_timeback));
 			}
 			if (mySize > position) {
 	          HashMap ticket_change = data.get(position);
 	          TicketChange change = (TicketChange) ticket_change.get("change");
-	          return "#"+ticket_change.get("id")+" by "+ change.author;
+	          return String.format(getApplicationContext().getString(R.string._by), ticket_change.get("id"), change.author);
 			}
-			else return "Load one day back";
+			else return getApplicationContext().getString(R.string.load_one_day_back);
 		}
 
 		@Override
@@ -134,6 +150,18 @@ public class TicketsActivity extends ThreadedListActivity {
 			if (data.size() > position) {
 	          HashMap ticket_change = data.get(position);
 	          TicketChange change = (TicketChange) ticket_change.get("change");
+
+	          // Show a quick description
+	          if (change.newv.length() > 25 && change.field.equals("description")) {
+	        	  if (ticket_change.get("excerpt") == null) {
+	        		  ticket_change.put("excerpt", true);
+					  data.set(position, ticket_change);
+		        	  return change.field + ": " + change.newv.substring(0, 20) + " ...";
+	        	  }
+	        	  else if (ticket_change.get("excerpt").equals(true)) {
+	        		  return change.field + ": " + change.newv.substring(0, 20) + " ...";
+	        	  }
+	          }
 	          return change.field + ": " + change.newv;
 			}
 			else return "";

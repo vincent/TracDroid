@@ -247,6 +247,30 @@ public class TracServer {
 		return null;
 	}
 	
+	public int createTicket(String summary, String description, HashMap<String,String> attributes, boolean notify) {
+        try {
+        	Object ticket_id_obj = client.call("ticket.create", summary, "xmlrpc test", attributes, notify);
+        	return Integer.parseInt(String.valueOf(ticket_id_obj));
+        	
+		} catch (XMLRPCException e) {
+			Log.e("error", "error", e);
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+
+	public String wikiToHtml(String text) {
+        try {
+        	return (String) client.call("wiki.wikiToHtml", text);
+        	
+		} catch (XMLRPCException e) {
+			Log.e("error", "error", e);
+			e.printStackTrace();
+		}
+		return text;
+	}
+	
 	public String getPageHTML(String pagename) {
 		return getPageHTML(pagename, null);
 	}

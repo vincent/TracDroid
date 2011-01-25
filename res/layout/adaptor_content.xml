@@ -7,11 +7,10 @@
 	
 	<TextView android:id="@+id/textLine" android:layout_height="wrap_content"
 		android:layout_marginLeft="10dip" android:textSize="15sp"
-		android:layout_width="wrap_content"
-	 />
+		android:layout_width="fill_parent" />
 	
 	<TextView android:id="@+id/textLine2" android:layout_height="wrap_content"
 		android:layout_marginLeft="10dip" android:textSize="10sp"
-		android:layout_width="wrap_content" android:layout_below="@+id/textLine" />
+		android:layout_width="fill_parent" android:layout_below="@+id/textLine" />
 	
 </RelativeLayout>

@@ -5,7 +5,8 @@ android:orientation="vertical"
 xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-	<TextView android:id="@+id/ticket_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView>
+	<TextView android:id="@+id/ticket_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView>
+	<EditText android:id="@+id/ticket_title_edit" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip" android:visibility="gone"></EditText>
 	<Button android:id="@+id/ticket_commit_button" android:layout_width="20dip" android:layout_height="20dip" android:text="" android:layout_gravity="bottom" android:visibility="gone"></Button>
 	
 	<ViewFlipper android:id="@+id/ticket_viewflipper"
