@@ -13,6 +13,7 @@ h2. Screenshots
 
 h3. Ticket view
 !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!
+!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!
 
 h3. Tickets timeline view
 !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changes.png!
