@@ -94,6 +94,7 @@ public class XMLRPCClient extends XMLRPCCommon {
 	 */
 	public XMLRPCClient(URI uri) {
 		SchemeRegistry registry = new SchemeRegistry();
+		
 		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
 		
 		//registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443)); 

@@ -11,6 +11,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -35,6 +39,20 @@ public class RoadmapsActivity extends ThreadedListActivity {
 		
 		String[] defaultFilters = {"not-passed"};
 		setFilters(defaultFilters);
+
+		// Fill toolbar
+		LinearLayout toolbar = (LinearLayout) findViewById(R.id.list_toolbar);
+		Button button_new = (Button) View.inflate(getApplicationContext(), R.layout.button, null);
+		button_new.setText(R.string.create_milestone);
+		toolbar.addView(button_new);
+		button_new.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
+				intent.putExtra("milestone_id", new Integer(0));
+				startActivity(intent);
+			}
+		});
 		
 		startLongRunningOperation();
     }

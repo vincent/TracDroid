@@ -10,7 +10,13 @@ import org.xmlrpc.android.XMLRPCException;
 
 import vincentlark.trac.Ticket;
 import vincentlark.trac.TicketAction;
+import vincentlark.trac.TicketAttachement;
 import vincentlark.trac.TicketChange;
+import vincentlark.xmlrpc.CachedXMLRPCClient;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Base64;
 import android.util.Log;
 
 import com.byarger.exchangeit.EasySSLSocketFactory;
@@ -24,8 +30,16 @@ public class TracServer {
 	public String password;
 	public String wikiStartPage;
 
+	/**
+	 * TracServer constructor. Creates new instance based on server URI and credentials
+	 * 
+	 * @param XMLRPC server URI
+	 * @param username to use
+	 * @param password to use
+	 */
 	public TracServer(String url, String username, String password) {
 		Security.setProperty("ssl.SocketFactory.provider",EasySSLSocketFactory.class.getName());
+		//Security.setProperty("ssl.SocketFactory.provider",PlainSocketFactory.class.getName());
 
 		this.domain = url;
 		this.username = username;
@@ -33,10 +47,54 @@ public class TracServer {
 		
 		Log.d("XML-RPC", "Contacting " + this.domain+"/login/xmlrpc");
 
-		client = new XMLRPCClient(this.domain+"/login/xmlrpc");
+		client = new CachedXMLRPCClient(this.domain+"/login/xmlrpc");
     	client.setBasicAuthentication(this.username, this.password);
 	}
 
+	/*
+	protected Object cachedCall(String methodName, Object o1) {
+		String cacheid = methodName + o1.hashCode();
+		if (!cache.have(cacheid) && isConnected()) {
+			Object data = client.call(method);
+			cache.put(cacheid, data);
+			return data;
+		}
+		else {
+			return cache.get(cacheid);
+		}
+	}
+	*/
+
+	/**
+	 * Convenience function to know if the device is connected or not
+	 * 
+	 * @param application context
+	 * @return true if connected
+	 */
+	public boolean isConnected(Context context) {
+		ConnectivityManager service = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = service.getActiveNetworkInfo();
+		return (activeNetwork==null ? false : activeNetwork.isConnected());
+	}
+	
+	/**
+	 * Convenience function to know if the device is roaming or not
+	 * 
+	 * @param application context
+	 * @return true if roaming
+	 */
+	public boolean isRoaming(Context context) {
+		ConnectivityManager service = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = service.getActiveNetworkInfo(); 
+		return (activeNetwork==null ? false : activeNetwork.isRoaming());
+	}
+	
+	/**
+	 * Convenience function to get a string list result
+	 * 
+	 * @param methodName name of method to call
+	 * @return strings vector
+	 */
 	public Vector<String> simpleListCall(String methodName) {
 		Vector<String> results = new Vector<String>();
     	Object[] methods_obj;
@@ -55,6 +113,11 @@ public class TracServer {
 		return results;
 	}
 	
+	/**
+	 * Convenience function to get a list of available methods
+	 * 
+	 * @return strings vector
+	 */
 	public String[] listMethods() {
     	Vector<String> methods = new Vector<String>();
         try {
@@ -73,14 +136,29 @@ public class TracServer {
     	return (String[]) methods.toArray(new String[methods.size()]);
     }
 
+	/**
+	 * List all milestones names
+	 * 
+	 * @return milestones names as a string vector
+	 */
 	public Vector<String> listMilestones() {
 		return simpleListCall("ticket.milestone.getAll");
 	}
 	
+	/**
+	 * List all ticket types
+	 * 
+	 * @return ticket types as a string vector
+	 */
 	public Vector<String> listTicketTypes() {
 		return simpleListCall("ticket.type.getAll");
 	}
 	
+	/**
+	 * List all milestones, with attributes
+	 * 
+	 * @return milestones names as a HashMap vector
+	 */
 	public Vector<HashMap> listRoadmaps() {
     	Vector<HashMap> roadmaps = new Vector<HashMap>();
         try {
@@ -146,6 +224,12 @@ public class TracServer {
     	return (String[]) methods.toArray(new String[methods.size()]);
     }
 
+	/**
+	 * List recent tickets changes, since a specified date
+	 * 
+	 * @param since the date since when you want changes
+	 * @return ticket changes as a HashMap (int ticket_id, TicketChange change) vector
+	 */
 	public Vector<HashMap> getRecentTicketChanges(Date since) {
 		Log.d("PROFILING", "get tickets");
 		Vector<HashMap> recent_changes = new Vector<HashMap>();
@@ -169,7 +253,6 @@ public class TracServer {
             }
 
 			Log.d("PROFILING", "multicall start");
-			@SuppressWarnings("unused")
 			Object[] methods_results = (Object[]) client.call("system.multicall", method_signs.toArray());
 			Log.d("PROFILING", "multicall end");
 
@@ -197,12 +280,19 @@ public class TracServer {
 		return recent_changes;
     }
 
+	/**
+	 * Get a ticket
+	 * 
+	 * @param ticket_id id of the desired ticket
+	 * @return ticket data
+	 */
 	public Ticket getTicket(int ticket_id) {
 		Ticket ticket = null;
 		HashMap<String, TicketAction> ticket_actions;
-		
+	
     	try {
-    		// Fetch a ticket. Returns [id, time_created, time_changed, attributes]
+    		
+        	// Fetch a ticket. Returns [id, time_created, time_changed, attributes]
 			Object[] ticket_obj = (Object[]) client.call("ticket.get", ticket_id);
 
 			if (ticket_obj.length > 0) {
@@ -233,7 +323,76 @@ public class TracServer {
 		
     	return ticket;
 	}
+
 	
+	public Ticket getTicketOneShot(int ticket_id) {
+		Ticket ticket = null;
+		HashMap<String, TicketAction> ticket_actions;
+    	Vector<HashMap> method_signs = new Vector<HashMap>();
+    	HashMap<String,Object> signature = new HashMap<String,Object>();
+    	Object[] params;
+    	
+    	signature.clear();
+    	params = new Object[1];
+    	params[0] = ticket_id;
+    	signature.put("methodName", "ticket.get");
+    	signature.put("params", params);
+    	method_signs.add(signature);
+    	
+    	signature.clear();
+    	params = new Object[1];
+    	params[0] = ticket_id;
+    	signature.put("methodName", "ticket.changeLog");
+    	signature.put("params", params);
+    	method_signs.add(signature);
+    	
+    	signature.clear();
+    	params = new Object[1];
+    	params[0] = ticket_id;
+    	signature.put("methodName", "ticket.getActions");
+    	signature.put("params", params);
+    	method_signs.add(signature);
+    	
+    	
+    	try {
+    		
+			Object[][] methods_results = (Object[][]) client.call("system.multicall", method_signs.toArray());
+			
+			if (methods_results[0].length > 0) {
+				ticket = Ticket.fromXMLRPC_ticket_get(methods_results[0]);
+			
+				Vector<TicketChange> changelog = new Vector<TicketChange>();
+	        	for (int i = 0;  i < methods_results[1].length;  i++) {
+	        		changelog.add(TicketChange.fromXMLRPC((Object[]) methods_results[1][i]));
+	        	}
+	        	ticket.setChangeLog(changelog);
+	
+				if (methods_results[2].length > 0) {
+					ticket_actions = new HashMap<String,TicketAction>();
+					
+					for (int i=0; i < methods_results[2].length; i++) {
+						TicketAction ticket_action = TicketAction.fromXMLRPC((Object[]) methods_results[2][i]);
+						ticket_actions.put((String) ticket_action.action, ticket_action);
+					}
+					ticket.setActions(ticket_actions);
+				}
+			}
+
+    	} catch (XMLRPCException e) {
+			e.printStackTrace();
+		}
+		
+    	return ticket;
+	}
+
+	
+	/**
+	 * Update a ticket with specified attributes
+	 * 
+	 * @param ticket_id id of the ticket to update
+	 * @param attributes HashMap of attributes to update
+	 * @return modified ticket
+	 */
 	public Ticket updateTicket(int ticket_id, HashMap<String,String> attributes) {
         try {
         	Object[] ticket_obj = (Object[]) client.call("ticket.update", ticket_id, "xmlrpc test", attributes);
@@ -247,6 +406,15 @@ public class TracServer {
 		return null;
 	}
 	
+	/**
+	 * Create a ticket with specified attributes
+	 * 
+	 * @param summary ticket title
+	 * @param description ticket description
+	 * @param attributes HashMap of attributes
+	 * @param notify notify
+	 * @return id of the created ticket
+	 */
 	public int createTicket(String summary, String description, HashMap<String,String> attributes, boolean notify) {
         try {
         	Object ticket_id_obj = client.call("ticket.create", summary, "xmlrpc test", attributes, notify);
@@ -260,6 +428,12 @@ public class TracServer {
 		return 0;
 	}
 
+	/**
+	 * Get HTML code from a wiki text
+	 * 
+	 * @param text wiki text
+	 * @return generated HTML code
+	 */
 	public String wikiToHtml(String text) {
         try {
         	return (String) client.call("wiki.wikiToHtml", text);
@@ -271,9 +445,23 @@ public class TracServer {
 		return text;
 	}
 	
+	/**
+	 * Get wiki page text
+	 * 
+	 * @param pagename name of the wiki page
+	 * @return page text
+	 */
 	public String getPageHTML(String pagename) {
 		return getPageHTML(pagename, null);
 	}
+
+	/**
+	 * Get wiki page text, for a particular version
+	 * 
+	 * @param pagename name of the wiki page
+	 * @param version desired version
+	 * @return page text
+	 */
 	public String getPageHTML(String pagename, Integer version) {
 		Log.d("PROFILING", "get wiki.getPageHTML");
         try {
@@ -286,9 +474,23 @@ public class TracServer {
 		return null;
     }
 	
+	/**
+	 * Get complete wiki page
+	 * 
+	 * @param pagename name of the wiki page
+	 * @return page attributes
+	 */
 	public HashMap<String,String> getPageComplete(String pagename) {
 		return getPageComplete(pagename, null);
 	}
+
+	/**
+	 * Get complete wiki page
+	 * 
+	 * @param pagename name of the wiki page
+	 * @param version desired version
+	 * @return page attributes
+	 */
 	public HashMap<String,String> getPageComplete(String pagename, Integer version) {
 		HashMap<String,String> result = new HashMap<String,String>();
 		Vector<HashMap> method_signs = new Vector<HashMap>();
@@ -329,6 +531,14 @@ public class TracServer {
 		return result;
 	}
 	
+	/**
+	 * Store a new version of a wiki page 
+	 * 
+	 * @param pagename name of the wiki page
+	 * @param content content of the wiki page
+	 * @param attrs attributes of the wiki page
+	 * @return true when succeed
+	 */
 	public boolean putPage(String pagename, String content, HashMap<String, String> attrs) {
 		boolean success = false;
         try {
@@ -340,5 +550,83 @@ public class TracServer {
 		}
 		return success;
 	}
+
+	/**
+	 * List attachements of a ticket 
+	 * 
+	 * @param ticket_id id of the ticket
+	 * @return vector of TicketAttachement
+	 */
+	public Vector<TicketAttachement> listAttachments(int ticket_id) {
+		Vector<TicketAttachement> attachements = new Vector<TicketAttachement>();
+        try {
+        	Object[] res = (Object[]) client.call("ticket.listAttachments", ticket_id);
+
+			if (res.length > 0) {
+				for (int i = 0; i < res.length; i++) {
+					attachements.add(TicketAttachement.fromXMLRPC((HashMap<String, Object>) res[i]));
+				}
+			}
+
+		} catch (XMLRPCException e) {
+			Log.e("error", "error", e);
+			e.printStackTrace();
+		}
+		return attachements;
+	}
+
+	/**
+	 * Get an attachement data 
+	 * 
+	 * @param ticket_id id of the ticket
+	 * @param filename name of the attachement
+	 * @return attachement data as a byte[]
+	 */
+	public byte[] getAttachment(int ticket_id, String filename) {
+        try {
+        	return Base64.decode((byte[]) client.call("ticket.getAttachment", ticket_id, filename), Base64.DEFAULT);
+		} catch (XMLRPCException e) {
+			Log.e("error", "error", e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Attach a file to a ticket 
+	 * 
+	 * @param ticket_id id of the ticket
+	 * @param filename name of the attachement
+	 * @param description description of the attachement
+	 * @param base64Data attachement data as a byte[]
+	 * @return created attachement filename
+	 */
+	public String putAttachment(int ticket_id, String filename, String description, byte[] base64Data) {
+		return putAttachment(ticket_id, filename, description, base64Data, true);
+	}
 	
+	/**
+	 * Attach a file to a ticket 
+	 * 
+	 * @param ticket_id id of the ticket
+	 * @param filename name of the attachement
+	 * @param description description of the attachement
+	 * @param base64Data attachement data as a byte[]
+	 * @param replace replace existing attachement or not
+	 * @return created attachement filename
+	 */
+	public String putAttachment(int ticket_id, String filename, String description, byte[] base64Data, boolean replace) {
+        try {
+        	return (String) client.call("ticket.putAttachment", ticket_id, filename, description, base64Data, replace);
+		} catch (XMLRPCException e) {
+			Log.e("error", "error", e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/*
+	array search.getSearchFilters()
+	array search.performSearch(string query, array filters=None)
+	*/
 }

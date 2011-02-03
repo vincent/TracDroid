@@ -9,8 +9,11 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.widget.TabHost;
+
+import com.marakana.CameraActivity;
 
 
 public class TracDroid extends TabActivity {
@@ -63,7 +66,6 @@ public class TracDroid extends TabActivity {
 				TracDroid.wikiStartPage = "WikiStart";
 
 			tabHost = getTabHost();  // The activity TabHost
-
 			tabHost.clearAllTabs();
 			
 			tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener(){
@@ -100,6 +102,18 @@ public class TracDroid extends TabActivity {
 			intent = new Intent().setClass(getApplicationContext(), TicketsActivity.class);
 			spec = tabHost.newTabSpec("tickets").setIndicator("Tickets", res.getDrawable(R.drawable.ic_tab_tickets)).setContent(intent);
 			tabHost.addTab(spec);
+
+			/*
+			intent = new Intent().setClass(getApplicationContext(), DiffActivity.class);
+			intent.putExtra("leftText", "text1");
+			intent.putExtra("rightText", "text2");
+			startActivity(intent);
+			*/
+
+			/*
+			intent = new Intent().setClass(getApplicationContext(), CameraActivity.class);
+			startActivity(intent);
+			*/
 
 			tabHost.setCurrentTab(TracDroid.current_tab);
 		}

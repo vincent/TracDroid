@@ -29,4 +29,5 @@
 <string name="oops">Chérie, ça va couper ...</string>
 <string name="cancel">Annuler</string>
 <string name="_by">%s par %s</string>
+<string name="loading_wiki_page">Chargement</string>
 </resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/diff_row"
+    android:layout_height="20dp"
+    android:layout_width="fill_parent">
+    
+	<TextView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/diff_row_linenb"
+	    android:layout_width="24dp"
+	    android:layout_height="fill_parent"
+	    android:paddingRight="2dp"
+	    android:background="#999"
+	    android:gravity="right">
+	</TextView>
+
+	<TextView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/diff_row_left_text"
+	    android:paddingLeft="3dp"
+	    android:paddingRight="5dp">
+	</TextView>
+
+	<TextView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/diff_row_separator"
+	    android:layout_width="2dp"
+	    android:background="#999">
+	</TextView>
+   
+	<TextView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/diff_row_right_text"
+	    android:paddingLeft="5dp"
+	    android:paddingRight="3dp">
+	</TextView>
+   
+</TableRow>

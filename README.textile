@@ -3,7 +3,8 @@ is a simple Trac browser for android.
 
 h2. Current objectives
  * view and edit wiki pages
- * view and edit complete ticket infos (details, changelog actions)
+ * view and edit complete ticket infos (details, changelog, actions)
+ * create ticket, with optional screenshot from camera
  * view roadmaps
 
 h2. Requires

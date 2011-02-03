@@ -29,4 +29,24 @@
 <string name="oops">Oups, something goes wrong</string>
 <string name="cancel">Cancel</string>
 <string name="_by">%s by %s</string>
+<string name="loading_wiki_page">Loading wiki page</string>
+<string name="ticket_title">Ticket summary</string>
+<string name="ticket_desc_edit">Enter description</string>
+<string name="actions">Actions</string>
+
+<string name="ticket_desc">Description</string>
+<string name="changelog">Changelog</string>
+<string name="no_network">No network</string>
+<string name="create_ticket">Create new ticket</string>
+<string name="ticket_created">Ticket created</string><string name="toolbar_search">search..</string>
+<string name="create_milestone">Create a milestone</string>
+<string name="take_photo">Add screenshot</string>
+<string name="shoot_the_bug">Shoot the bug !</string>
+<string name="mark_the_bug">Mark the bug</string>
+<string name="finish">Finish</string>
+<string name="reshoot">Reshoot</string>
+<string name="take_file">Attach a file</string>
+<string name="app_dec">Manage a Trac bugtracker instance</string>
+
+<string name="not_owned">not owned</string>
 </resources>

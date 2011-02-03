@@ -1,7 +1,6 @@
 package vincentlark.trac.tracdroid;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Vector;
 
 import vincentlark.trac.TicketChange;
@@ -9,14 +8,18 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TicketsActivity extends ThreadedListActivity {
 
@@ -27,6 +30,21 @@ public class TicketsActivity extends ThreadedListActivity {
         super.onCreate(savedInstanceState);
 		setContentView(R.layout.simple_list);
 
+		// Fill toolbar
+		LinearLayout toolbar = (LinearLayout) findViewById(R.id.list_toolbar);
+		Button button_new = (Button) View.inflate(getApplicationContext(), R.layout.button, null);
+		button_new.setText(R.string.create_ticket);
+		toolbar.addView(button_new);
+		button_new.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent().setClass(getApplicationContext(), TicketActivity.class);
+				intent.putExtra("ticket_id", new Integer(0));
+				startActivity(intent);
+			}
+		});
+		
+		
 		updateTitle();
 		
 		ListView list = (ListView) this.findViewById(android.R.id.list);
@@ -42,7 +60,6 @@ public class TicketsActivity extends ThreadedListActivity {
 				}
 				
 				HashMap<String,Object> ticket = data.get(position);
-				TicketChange change = (TicketChange) ticket.get("change");
 				
 				if (ticket.get("excerpt") != null && ticket.get("excerpt").equals(true)) {
 					// Show a big description
@@ -84,11 +101,16 @@ public class TicketsActivity extends ThreadedListActivity {
             public void run() {
             	data.clear();
     			Calendar cal = Calendar.getInstance();
-    			while (data.size() == 0) {
+    			boolean running = true;
+    			while (data.size() == 0 && running) {
 					cal.add(Calendar.HOUR, -hours_timeback);
 					data = TracDroid.server.getRecentTicketChanges( cal.getTime() );
 					if (data.size() > 0) {
 						mHandler.post(mUpdateResults);
+					}
+					else if (!TracDroid.server.isConnected(getApplicationContext())) {
+						dialog.setTitle(getApplicationContext().getString(R.string.no_network));
+						running = false;
 					}
 					else if (hours_timeback < 168) {
 						hours_timeback += 48;
@@ -138,7 +160,7 @@ public class TicketsActivity extends ThreadedListActivity {
 				return String.format(getApplicationContext().getString(R.string.no_changes_ask_load_more), PrettyDate.hours(hours_timeback));
 			}
 			if (mySize > position) {
-	          HashMap ticket_change = data.get(position);
+	          HashMap<String, Object> ticket_change = data.get(position);
 	          TicketChange change = (TicketChange) ticket_change.get("change");
 	          return String.format(getApplicationContext().getString(R.string._by), ticket_change.get("id"), change.author);
 			}
@@ -148,7 +170,7 @@ public class TicketsActivity extends ThreadedListActivity {
 		@Override
 		protected String getItemTextLine2(Integer position) {
 			if (data.size() > position) {
-	          HashMap ticket_change = data.get(position);
+	          HashMap<String, Object> ticket_change = data.get(position);
 	          TicketChange change = (TicketChange) ticket_change.get("change");
 
 	          // Show a quick description

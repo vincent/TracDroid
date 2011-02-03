@@ -1,8 +1,5 @@
 package vincentlark.trac.tracdroid;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Calendar;
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -95,7 +92,7 @@ public class WikiActivity extends Activity {
 	        }
 	    });
 
-        changePage(TracDroid.wikiStartPage);
+    	changePage(TracDroid.wikiStartPage);
     }
 
     protected Dialog onCreateDialog(int id) {
@@ -118,9 +115,9 @@ public class WikiActivity extends Activity {
                     	   attrs.put("comment", text_entry.getText().toString());
                     	   boolean success = TracDroid.server.putPage(current_page, wikisource.getText().toString(), attrs);
                     	   if (success)
-                    		   Toast.makeText(getApplicationContext(), "Wiki page \""+current_page+"\" edited", Toast.LENGTH_SHORT).show();
+                    		   Toast.makeText(getApplicationContext(), String.format(getApplicationContext().getString(R.string.wiki_page_edited), current_page), Toast.LENGTH_SHORT).show();
                     	   else
-                    		   Toast.makeText(getApplicationContext(), "Oups, something goes wrong", Toast.LENGTH_SHORT).show();
+                    		   Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.oops), Toast.LENGTH_SHORT).show();
                        }
                    })
                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -142,7 +139,7 @@ public class WikiActivity extends Activity {
     
     protected void changePage(final String pagename) {
 
-    	final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading wiki page", true, true);
+    	final ProgressDialog dialog = ProgressDialog.show(this, "", this.getString(R.string.loading_wiki_page), true, true);
     	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {

@@ -3,8 +3,6 @@ package vincentlark.trac.tracdroid;
 import java.math.BigInteger;
 import java.util.Date;
 
-import android.util.Log;
-
 public class PrettyDate {
 
 	public static String hours(int hours) {
