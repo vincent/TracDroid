@@ -325,53 +325,64 @@ public class TracServer {
 	}
 
 	
+	/**
+	 * Get a ticket, and all infos, in one call
+	 * 
+	 * @param ticket_id id of the desired ticket
+	 * @return ticket data
+	 */
 	public Ticket getTicketOneShot(int ticket_id) {
 		Ticket ticket = null;
 		HashMap<String, TicketAction> ticket_actions;
     	Vector<HashMap> method_signs = new Vector<HashMap>();
     	HashMap<String,Object> signature = new HashMap<String,Object>();
-    	Object[] params;
     	
-    	signature.clear();
-    	params = new Object[1];
-    	params[0] = ticket_id;
+    	signature = new HashMap<String,Object>();
+    	Object[] params1 = new Object[1];
+    	params1[0] = ticket_id;
     	signature.put("methodName", "ticket.get");
-    	signature.put("params", params);
+    	signature.put("params", params1);
     	method_signs.add(signature);
     	
-    	signature.clear();
-    	params = new Object[1];
-    	params[0] = ticket_id;
+    	signature = new HashMap<String,Object>();
+    	Object[] params2 = new Object[1];
+    	params2[0] = ticket_id;
     	signature.put("methodName", "ticket.changeLog");
-    	signature.put("params", params);
+    	signature.put("params", params2);
     	method_signs.add(signature);
     	
-    	signature.clear();
-    	params = new Object[1];
-    	params[0] = ticket_id;
+    	signature = new HashMap<String,Object>();
+    	Object[] params3 = new Object[1];
+    	params3[0] = ticket_id;
     	signature.put("methodName", "ticket.getActions");
-    	signature.put("params", params);
+    	signature.put("params", params3);
     	method_signs.add(signature);
     	
     	
     	try {
     		
-			Object[][] methods_results = (Object[][]) client.call("system.multicall", method_signs.toArray());
+			Object[] methods_results = (Object[]) client.call("system.multicall", method_signs.toArray());
 			
-			if (methods_results[0].length > 0) {
-				ticket = Ticket.fromXMLRPC_ticket_get(methods_results[0]);
+			Object[] _methodResult = (Object[]) methods_results[0];
+			Object[] methodResult = (Object[]) _methodResult[0];
+			if (methodResult.length > 0) {
+				ticket = Ticket.fromXMLRPC_ticket_get(methodResult);
 			
+				_methodResult = (Object[]) methods_results[1];
+				methodResult = (Object[]) _methodResult[0];
 				Vector<TicketChange> changelog = new Vector<TicketChange>();
-	        	for (int i = 0;  i < methods_results[1].length;  i++) {
-	        		changelog.add(TicketChange.fromXMLRPC((Object[]) methods_results[1][i]));
+	        	for (int i = 0;  i < methodResult.length;  i++) {
+	        		changelog.add(TicketChange.fromXMLRPC((Object[]) methodResult[i]));
 	        	}
 	        	ticket.setChangeLog(changelog);
 	
-				if (methods_results[2].length > 0) {
+				_methodResult = (Object[]) methods_results[2];
+				methodResult = (Object[]) _methodResult[0];
+				if (methodResult.length > 0) {
 					ticket_actions = new HashMap<String,TicketAction>();
 					
-					for (int i=0; i < methods_results[2].length; i++) {
-						TicketAction ticket_action = TicketAction.fromXMLRPC((Object[]) methods_results[2][i]);
+					for (int i=0; i < methodResult.length; i++) {
+						TicketAction ticket_action = TicketAction.fromXMLRPC((Object[]) methodResult[i]);
 						ticket_actions.put((String) ticket_action.action, ticket_action);
 					}
 					ticket.setActions(ticket_actions);

@@ -2,6 +2,7 @@ package vincentlark.trac.tracdroid;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -49,8 +51,10 @@ public class TicketActivity extends Activity {
 	static HashMap<String,String> current_changes;
 	static Vector<String> current_attachements;
 	
-	static LinearLayout imagesAttachementsContainer;
-	static LinearLayout filesAttachementsContainer;
+	static int view_changelog = 0;
+	
+	LinearLayout imagesAttachementsContainer;
+	LinearLayout filesAttachementsContainer;
 	
 	static final int TICKET_IMAGE = 1;
 	static final int TICKET_FILE = 2;
@@ -117,7 +121,7 @@ public class TicketActivity extends Activity {
 		titleEdit.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				((EditText) v).setVisibility(View.GONE);
+				((EditText) v).setVisibility(View.INVISIBLE);
 				TextView title = (TextView) findViewById(R.id.ticket_title);
 				String new_summary = ((EditText) v).getText().toString();
 				
@@ -158,7 +162,7 @@ public class TicketActivity extends Activity {
 		descEdit.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				((EditText) v).setVisibility(View.GONE);
+				((EditText) v).setVisibility(View.INVISIBLE);
 				TextView desc = (TextView) findViewById(R.id.ticket_desc);
 				String new_description = ((EditText) v).getText().toString();
 				
@@ -185,13 +189,16 @@ public class TicketActivity extends Activity {
 			((TextView) findViewById(R.id.ticket_report)).setText(String.format(this.getString(R.string.reported_by_on), ticket.attributes.reporter, created));
 			
 			// Owned by ..
+			String ownedBy = "";
 			if (ticket.attributes.owner != null)
-				((TextView) findViewById(R.id.ticket_owner)).setText(String.format(this.getString(R.string.owned_by), ticket.attributes.owner));
+				ownedBy = String.format(this.getString(R.string.owned_by), ticket.attributes.owner);
 			else
-				((TextView) findViewById(R.id.ticket_owner)).setText(this.getString(R.string.not_owned));
+				ownedBy = this.getString(R.string.not_owned);
 			
 			// Current status
-			((TextView) findViewById(R.id.ticket_status)).setText(String.format(this.getString(R.string.status_is), ticket.attributes.status));
+			((TextView) findViewById(R.id.ticket_status)).setText(
+						String.format(this.getString(R.string.status_is), ticket.attributes.status)
+				  +','+ ownedBy);
 			
 			// ChangeLog
 			Vector<TicketChange> changelog = (Vector<TicketChange>) ticket.changeLog;
@@ -230,11 +237,6 @@ public class TicketActivity extends Activity {
 				
 				changelogLayout.addView(changelogItem);
 			}
-			((Button) findViewById(R.id.ticket_changelog_back)).setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) { switchView(1); }
-			});
-			
 			
 			// Tickets actions
 			RadioGroup actions_radios = (RadioGroup) findViewById(R.id.ticket_actions);
@@ -381,7 +383,7 @@ public class TicketActivity extends Activity {
 		// Images Attachements
 		imagesAttachementsContainer = (LinearLayout) findViewById(R.id.ticket_images_attachements);
 		// Screenshot button
-		Button button_photo = (Button) findViewById(R.id.ticket_photo_take);
+		ImageButton button_photo = (ImageButton) findViewById(R.id.ticket_photo_take);
 		button_photo.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -401,7 +403,7 @@ public class TicketActivity extends Activity {
 		// Files Attachements
 		filesAttachementsContainer = (LinearLayout) findViewById(R.id.ticket_files_attachements);
 		// Screenshot button
-		Button button_file = (Button) findViewById(R.id.ticket_file_take);
+		ImageButton button_file = (ImageButton) findViewById(R.id.ticket_file_take);
 		button_file.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -417,13 +419,13 @@ public class TicketActivity extends Activity {
 		findViewById(R.id.ticket_link_changelog).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				switchView(0);
+				switchView(view_changelog);
 			}
 		});
 
 		// Hide all useless fields for creation
 		if (creatingTicket()) {
-			int[] useless = { R.id.ticket_link_changelog, R.id.ticket_owner, R.id.ticket_report,
+			int[] useless = { R.id.ticket_link_changelog, R.id.ticket_report,
 							  R.id.ticket_title, R.id.ticket_desc, R.id.ticket_actions_title };
 			for (int i=0; i<useless.length; i++)
 				findViewById(useless[i]).setVisibility(View.GONE);
@@ -468,15 +470,22 @@ public class TicketActivity extends Activity {
 		        	if (ticket_id > 0) {
 		        		dialog.dismiss();
 		    			Toast.makeText(getApplicationContext(), this.getString(R.string.ticket_created), Toast.LENGTH_SHORT).show();
+		    			finish();
+		        	}
+		        	else {
+		    			Toast.makeText(getApplicationContext(), this.getString(R.string.oops), Toast.LENGTH_SHORT).show();
 		        	}
 	        	}
 	    		else {
 	    			Ticket new_ticket = TracDroid.server.updateTicket(ticket.id, current_changes);
-	    			Log.d("ticket.update: ticket has been updated ", new_ticket.toString());
 		        	if (new_ticket != null) {
+		    			Log.d("ticket.update: ticket has been updated ", new_ticket.toString());
 		        		dialog.dismiss();
 		    			Toast.makeText(getApplicationContext(), this.getString(R.string.ticket_updated), Toast.LENGTH_SHORT).show();
 		        		current_changes.clear();
+		        	}
+		        	else {
+		    			Toast.makeText(getApplicationContext(), this.getString(R.string.oops), Toast.LENGTH_SHORT).show();
 		        	}
 	    		}
 
@@ -495,7 +504,7 @@ public class TicketActivity extends Activity {
 	    					TracDroid.server.putAttachment(ticket_id, f.getName(), "", buffer);
 	    				}
 	    				catch (Exception e) {
-	    					
+    		    			Toast.makeText(getApplicationContext(), this.getString(R.string.oops), Toast.LENGTH_SHORT).show();
 	    				}
 	    			}
 	    		}
@@ -551,9 +560,10 @@ public class TicketActivity extends Activity {
     private void addTicketAttachement(String type, String data) {
     	
     	if (type.equals("bitmap".intern())) {
-	    	if (new File(data).exists()) {
+    		File f = new File(data);
+	    	if (f.exists()) {
 	        	Log.d("", "onActivityResult - load file as attachement: "+data);
-	    		Bitmap myBitmap = BitmapFactory.decodeFile(data);
+	    		Bitmap myBitmap = decodeFile(f, 64);
 	    		ImageView myImage = (ImageView) View.inflate(getApplicationContext(), R.layout.image, null);
 	    		myImage.setImageBitmap(myBitmap);
 	    		myImage.setAdjustViewBounds(true);
@@ -572,7 +582,29 @@ public class TicketActivity extends Activity {
     	current_attachements.add(data);
 	}
 
+    private Bitmap decodeFile(File f, int maxSize){
+        Bitmap b = null;
+        try {
+            //Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
+            int scale = 1;
+            if (o.outHeight > maxSize || o.outWidth > maxSize) {
+                scale = (int) Math.pow(2, (int) Math.round(Math.log(maxSize / (double) Math.max(o.outHeight, o.outWidth)) / Math.log(0.5)));
+            }
+
+            //Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            b = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+        } catch (FileNotFoundException e) {
+        }
+        return b;
+    }
+    
 	private void switchView(int view) {
+		view_changelog = 1 - view;
 		ViewFlipper flipper = (ViewFlipper) findViewById(R.id.ticket_viewflipper);
 		flipper.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.push_up_in));
 		flipper.setDisplayedChild(view);

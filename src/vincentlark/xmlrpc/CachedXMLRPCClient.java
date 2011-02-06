@@ -6,7 +6,7 @@ import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 
 public class CachedXMLRPCClient extends XMLRPCClient {
-
+	
 	protected String cacheDirectory;
 	
 	/**

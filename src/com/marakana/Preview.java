@@ -70,6 +70,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		camera.stopPreview();
 		camera.release();
+		camera = null;
 	}
 
 	// Called when holder has changed

@@ -188,7 +188,6 @@ public class TracDroidPreferences extends PreferenceActivity implements OnShared
 	    editor.putString("domain", preferences.getString("domain", ""));
 	    editor.putString("username", preferences.getString("username", ""));
 	    editor.putString("password", preferences.getString("password", ""));
-	    editor.putBoolean("use_ssl", preferences.getBoolean("use_ssl", false));
 	    editor.putString("wiki_start_page", preferences.getString("wiki_start_page", "WikiStart"));
 
 	    String hash;

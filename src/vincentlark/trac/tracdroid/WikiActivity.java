@@ -66,6 +66,7 @@ public class WikiActivity extends Activity {
         
         wikisource = (TextView) findViewById(R.id.webview_text);
         webkit = (WebView) findViewById(R.id.webview_html);
+        webkit.getSettings().setJavaScriptEnabled(true);
         
         wikisource.setOnKeyListener(new View.OnKeyListener() {
 			@Override

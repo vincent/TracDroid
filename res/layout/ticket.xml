@@ -5,18 +5,26 @@ android:orientation="vertical"
 xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-	<TextView android:id="@+id/ticket_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView>
-	<EditText android:id="@+id/ticket_title_edit" android:hint="@string/ticket_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip" android:visibility="gone"></EditText>
-	<Button android:id="@+id/ticket_commit_button" android:layout_width="20dip" android:layout_height="20dip" android:text="" android:layout_gravity="bottom" android:visibility="gone"></Button>
+	<RelativeLayout android:layout_width="fill_parent" android:layout_height="120dp" android:background="#933">
+		<TextView android:id="@+id/ticket_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip" android:textColor="#fff" android:layout_alignParentTop="true"/>
+		<EditText android:id="@+id/ticket_title_edit" android:hint="@string/ticket_title" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip" android:visibility="invisible" android:layout_alignParentTop="true"/>
+		
+		<Button android:id="@+id/ticket_commit_button" android:layout_width="20dip" android:layout_height="20dip" android:text="" android:layout_gravity="bottom" android:visibility="gone"/>
+
+		<TextView android:id="@+id/ticket_desc" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:lines="2" android:padding="5dip" android:layout_marginBottom="5dp" android:layout_below="@id/ticket_title"/>
+		<EditText android:id="@+id/ticket_desc_edit" android:hint="@string/ticket_desc_edit" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:lines="6" android:padding="5dip" android:layout_marginBottom="5dp" android:gravity="top" android:visibility="invisible" android:layout_below="@id/ticket_title"/>
+
+		<ImageButton android:id="@+id/ticket_link_changelog" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/ic_tab_roadmaps_on" android:layout_marginBottom="15dp" android:layout_marginRight="8dp" android:layout_alignParentBottom="true" android:layout_alignParentRight="true"/>
+		
+		<Button android:layout_width="fill_parent" android:layout_height="9dp" android:layout_gravity="center" android:background="#E55" android:layout_alignParentBottom="true"/>
+	</RelativeLayout>
 	
 	<ViewFlipper android:id="@+id/ticket_viewflipper"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content">  
 	
 		<ScrollView android:id="@+id/ticket_changelog_scrollable" android:layout_width="fill_parent" android:layout_height="fill_parent">
-			<LinearLayout android:id="@+id/ticket_changelog" android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical">
-				<Button android:id="@+id/ticket_changelog_back" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="back >" android:layout_gravity="bottom"></Button>
-			</LinearLayout>
+			<LinearLayout android:id="@+id/ticket_changelog" android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
 		</ScrollView>
 
 		<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent">
@@ -25,30 +33,29 @@ android:layout_width="fill_parent" android:layout_height="fill_parent">
 			  android:layout_height="fill_parent" android:orientation="vertical">
 		
 				<TextView android:id="@+id/ticket_report" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:padding="5dip" android:paddingBottom="4dip"></TextView>
-				<TextView android:id="@+id/ticket_owner"  android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:padding="5dip" android:paddingTop="4dip"></TextView>
+				<!--  <TextView android:id="@+id/ticket_owner"  android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:padding="5dip" android:paddingTop="4dip"></TextView>  -->
 				<TextView android:id="@+id/ticket_status" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:padding="5dip" android:paddingTop="4dip"></TextView>
-				
-				<!-- <TextView android:id="@+id/ticket_desc_title" android:layout_width="fill_parent" android:text="@string/ticket_desc" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView> -->
-				<TextView android:id="@+id/ticket_desc" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:lines="5" android:padding="5dip" android:layout_marginBottom="5dp"></TextView>
-				<EditText android:id="@+id/ticket_desc_edit" android:hint="@string/ticket_desc_edit" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="18sp" android:lines="6" android:padding="5dip" android:layout_marginBottom="5dp" android:gravity="top"></EditText>
+							
+				<LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+					<Spinner android:id="@+id/ticket_spin_type" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+					<Spinner android:id="@+id/ticket_spin_milestone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+				</LinearLayout>
 			
-				<Spinner android:id="@+id/ticket_spin_type" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="16sp"></Spinner>
-			
-				<Spinner android:id="@+id/ticket_spin_milestone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="16sp"></Spinner>
-			
-				<TextView android:id="@+id/ticket_link_changelog" android:layout_width="fill_parent" android:text="@string/changelog" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView>
+				<!-- <TextView android:id="@+id/ticket_link_changelog" android:layout_width="fill_parent" android:text="@string/changelog" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"/>  -->
 			
 				<!--  <TextView android:id="@+id/ticket_link_actions" android:layout_width="fill_parent" android:text="Actions" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView>  -->
 				<TextView android:id="@+id/ticket_actions_title" android:layout_width="fill_parent" android:text="@string/actions" android:layout_height="wrap_content" android:textSize="20sp" android:textStyle="bold" android:padding="5dip"></TextView>
 				<RadioGroup android:id="@+id/ticket_actions" android:layout_width="fill_parent" android:layout_height="wrap_content"></RadioGroup>
 				
 				<LinearLayout android:id="@+id/ticket_images_attachements" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="50dp" android:gravity="left">
-					<Button android:id="@+id/ticket_photo_take" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/take_photo" />
+					<!--  <Button android:id="@+id/ticket_photo_take" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/take_photo" />  -->
+					<ImageButton android:id="@+id/ticket_photo_take" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/stock_new_window" />
 					<LinearLayout android:orientation="horizontal" android:id="@+id/ticket_images_attachements" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="right" />
 				</LinearLayout>
 
 				<LinearLayout android:id="@+id/ticket_files_attachements" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="50dp" android:gravity="left">
-					<Button android:id="@+id/ticket_file_take" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/take_file" />
+					<!-- <Button android:id="@+id/ticket_file_take" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/take_file" /> -->
+					<ImageButton android:id="@+id/ticket_file_take" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/stock_new_text" />
 					<LinearLayout android:orientation="horizontal" android:id="@+id/ticket_files_attachements" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="right" />
 				</LinearLayout>
 			</LinearLayout>

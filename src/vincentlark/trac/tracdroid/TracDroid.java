@@ -9,11 +9,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.View;
-import android.view.View.OnLongClickListener;
+import android.util.Log;
 import android.widget.TabHost;
-
-import com.marakana.CameraActivity;
 
 
 public class TracDroid extends TabActivity {
@@ -25,8 +22,6 @@ public class TracDroid extends TabActivity {
 	static String wikiStartPage;
 
 	static SharedPreferences preferences;
-
-	private String current_config;
 
 	static int current_tab;
 
@@ -43,13 +38,15 @@ public class TracDroid extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		Log.d("TracDroid", "config hash is "+lastUsedConfigHash);
+
 		preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
 		if (preferences.getString("domain", "").equals("")) {
 			// We don"t have any trac server configured
 			startActivity(new Intent().setClass(getApplicationContext(), TracDroidPreferences.class));      	
 		}
-		else if (! preferences.getString("domain", "").equals(lastUsedConfigHash)) {
+		else if (! preferences.getString("config_hash", "").equals(lastUsedConfigHash)) {
 			lastUsedConfigHash = preferences.getString("config_hash", "");
 
 			String tracServerDomain = preferences.getString("domain", "");
