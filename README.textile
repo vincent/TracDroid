@@ -13,17 +13,12 @@ h2. Requires
 
 h2. Screenshots
 
-h3. Ticket view
-!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!
+h3. Ticket view, changelog and attachments
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket.png!!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_attachments.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_attachments.png!
+
 
 h3. Tickets timeline view
 !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changes.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changes.png!
-
-h3. Ticket changelog
-!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!
-
-h3. Ticket attachments
-!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_attachments.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_attachments.png!
 
 h3. Milestones
 !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/milestones.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/milestones.png!
