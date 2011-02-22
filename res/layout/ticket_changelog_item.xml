@@ -5,11 +5,11 @@
     android:orientation="vertical">
 
 	<TextView android:id="@+id/changelog_item_title" android:layout_width="fill_parent" 
-		android:layout_height="wrap_content" android:padding="10dp" android:textSize="16sp">
+		android:layout_height="wrap_content" android:padding="8dp" android:textSize="16sp" android:gravity="center">
 	</TextView>
 
 	<TextView android:id="@+id/changelog_item_text" android:layout_width="fill_parent" 
-		android:layout_height="wrap_content" android:padding="10dp" android:textSize="16sp" android:visibility="gone">
+		android:layout_height="wrap_content" android:padding="8dp" android:textSize="16sp" android:visibility="gone">
 	</TextView>
 
 </LinearLayout>

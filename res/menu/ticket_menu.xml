@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu android:id="@+id/ticket_menu"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/ticket_menu_save" android:title="Save"></item>
-	<item android:id="@+id/ticket_menu_new" android:title="Create"></item>
-	<item android:id="@+id/ticket_menu_settings" android:title="Settings"></item>
+<menu android:id="@+id/ticket_menu" xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/ticket_menu_save" android:title="Save" android:icon="@drawable/ic_menu_save" />
+	<item android:id="@+id/ticket_menu_settings" android:title="Settings" android:icon="@drawable/ic_menu_preferences" />
 </menu>

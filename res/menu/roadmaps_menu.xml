@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu android:id="@+id/roadmaps_menu"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/roadmaps_menu_home" android:title="All"></item>
-	<item android:id="@+id/roadmaps_menu_new" android:title="Create"></item>
-	<item android:id="@+id/roadmaps_menu_edit" android:title="Edit"></item>
-	<item android:id="@+id/roadmaps_menu_settings" android:title="Settings"></item>
+<menu android:id="@+id/roadmaps_menu" xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/roadmaps_menu_all" android:title="All" />
+	<item android:id="@+id/roadmaps_menu_new" android:title="Create" />
+	<item android:id="@+id/roadmaps_menu_edit" android:title="Edit" />
+	<item android:id="@+id/roadmaps_menu_settings" android:title="Settings"
+		android:icon="@drawable/ic_menu_preferences" />
 </menu>

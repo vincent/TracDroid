@@ -7,19 +7,20 @@
 <string-array name="prefTracServerValues"><item>new</item>
 </string-array>
 <string name="click_to_edit">Cliquer pour éditer</string>
-<string name="_weeks">%s semaines</string>
+<string name="_hours">%s heures</string>
 <string name="_days">%s jours</string>
+<string name="_weeks">%s semaines</string>
 <string name="_months">%s mois</string>
 <string name="_years">%s années</string>
 <string name="unfetcheable_ticket">Désolé, impossible de voir ce ticket</string>
 <string name="loading_ticket">Chargement</string>
-<string name="reported_by_on">reporté par %s, %s</string>
+<string name="reported_by_on">reporté par %s\n%s</string>
 <string name="owned_by">appartient à %s</string>
 <string name="status_is">status : %s</string>
 <string name="updating_ticket">Mise à jour</string>
 <string name="ticket_updated">Ticket mis à jour</string>
 <string name="nothing_changed">Rien à faire</string>
-<string name="to">vers</string>
+<string name="to">à</string>
 <string name="tickects_changes_since">Tickets modifiés depuis %s</string>
 <string name="loading_changes">Chargement</string>
 <string name="loading_changes_since">Modifications depuis %s</string>
@@ -28,6 +29,24 @@
 <string name="wiki_page_edited">La page &quot;%s&quot; à été modifiée</string>
 <string name="oops">Chérie, ça va couper ...</string>
 <string name="cancel">Annuler</string>
-<string name="_by">%s par %s</string>
+<string name="_by">#%s par %s</string>
 <string name="loading_wiki_page">Chargement</string>
+
+<string name="_less_than_one_minute_ago">il y a moins d\'une minute</string>
+<string name="_in_less_than_one_minute">dans moins d\'une minute</string>
+<string name="_seconds_ago">il y a %s secondes</string>
+<string name="_minutes_ago">il y a %s minutes</string>
+<string name="_hours_ago">il y a %s heures</string>
+<string name="_days_ago">il y a %s jours</string>
+<string name="_weeks_ago">il y a %s semaines</string>
+<string name="_months_ago">il y a %s mois</string>
+<string name="_years_ago">il y a %s ans</string>
+<string name="_in_seconds">dans %s secondes</string>
+<string name="_in_minutes">dans %s minutes</string>
+<string name="_in_hours">dans %s heures</string>
+<string name="_in_days">dans %s jours</string>
+<string name="_in_weeks">dans %s semaines</string>
+<string name="_in_months">dans %s mois</string>
+<string name="_in_years">dans %s ans</string>
+
 </resources>
