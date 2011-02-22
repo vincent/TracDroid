@@ -1,0 +1,9 @@
+h1. TODO
+ * HTTP / HTTPS / HTTPS-self-signed connection tests
+ 
+ * Toast when ticket/milestone updated
+ 
+
+h2. CODE
+ * replace Iterators with: 
+   for (int i = initializer; i >= 0; i--) { ... }

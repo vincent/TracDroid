@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+	<TextView 
+		android:id="@+id/list_item_text"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp"
+	    android:textSize="25dp" 
+	    android:layout_alignParentTop="true"
+	    android:layout_alignParentLeft="true"/>
+	<TextView 
+		android:id="@+id/list_item_value"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp"
+	    android:textSize="25dp"
+	    android:layout_alignParentTop="true"
+	    android:layout_toRightOf="@+id/list_item_text"/>
+	<TextView 
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp"
+	    android:textSize="30dp" 
+	    android:layout_alignParentTop="true"
+	    android:layout_alignParentRight="true"
+	    android:textScaleX="0.4"
+	    android:text=">" />
+</RelativeLayout>

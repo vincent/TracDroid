@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/unit_body" android:orientation="vertical"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+	<RelativeLayout android:id="@+id/header" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:background="#933">
+		<TextView android:id="@+id/title"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:textSize="18sp" android:textStyle="bold" android:padding="5dip"
+			android:textColor="#fff" android:layout_alignParentTop="true"
+			android:layout_marginRight="45dp" />
+		<EditText android:id="@+id/title_edit" android:hint="@string/ticket_title"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:textSize="18sp" android:textStyle="bold" android:padding="5dip"
+			android:visibility="invisible" android:layout_alignParentTop="true"
+			android:layout_marginRight="45dp" />
+
+		<ImageButton android:id="@+id/commit_button"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_margin="8dp" android:layout_alignParentBottom="true"
+			android:layout_alignParentLeft="true" android:background="@drawable/btn_check_buttonless_on" />
+
+		<TextView android:id="@+id/calendar"
+			android:layout_width="64dp" android:layout_height="64dp"
+			android:layout_margin="8dp" android:layout_alignParentRight="true"
+			android:layout_alignParentTop="true" android:background="@drawable/widget_date" 
+			android:padding="1dp" android:paddingTop="7dp" android:textStyle="bold" android:textColor="#000" 
+			android:gravity="center" android:textSize="13dp" android:lineSpacingExtra="2dp" />
+
+		<TextView android:id="@+id/desc" android:inputType="textMultiLine"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:textSize="14sp" android:lines="2" android:gravity="top"
+			android:padding="5dip" android:layout_marginBottom="32dp"
+			android:layout_marginTop="45dp" alignParentTop="true"
+			android:layout_below="@+id/title_edit"
+			android:layout_marginRight="45dp" />
+		<EditText android:id="@+id/desc_edit" android:hint="@string/ticket_desc_edit"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:textSize="14sp" android:lines="6" android:gravity="top"
+			android:padding="5dip" android:layout_marginBottom="32dp"
+			android:layout_marginTop="45dp" android:layout_marginRight="45dp"
+			android:visibility="invisible" />
+
+		<ImageButton android:id="@+id/link_changelog"
+			android:layout_width="30dp" android:layout_height="30dp"
+			android:background="@drawable/ic_menu_recent_history"
+			android:layout_marginBottom="8dp" android:layout_marginRight="5dp"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentRight="true" />
+		<TextView android:id="@+id/changelog_order"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_alignRight="@+id/link_changelog"
+			android:layout_alignBottom="@+id/link_changelog"
+			android:layout_marginBottom="14dp"
+			android:layout_marginLeft="-8dp"
+			android:textColor="#fff"
+			android:text="" />
+
+		<ImageButton android:id="@+id/file_take"
+			android:layout_width="30dp" android:layout_height="30dp"
+			android:background="@drawable/ic_menu_attachment"
+			android:layout_marginBottom="8dp" android:layout_marginRight="45dp" android:layout_marginLeft="3dp"
+			android:layout_alignParentBottom="true" android:layout_alignParentRight="true"/>
+		<ImageButton android:id="@+id/photo_take"
+			android:layout_width="30dp" android:layout_height="30dp"
+			android:background="@drawable/ic_menu_camera"
+			android:layout_marginBottom="8dp" android:layout_marginRight="12dp"
+			android:layout_alignParentBottom="true" android:layout_toLeftOf="@+id/file_take" />
+		<TextView android:id="@+id/photo_take_count"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_alignRight="@+id/photo_take"
+			android:layout_alignBottom="@+id/photo_take"
+			android:layout_marginBottom="14dp"
+			android:layout_marginRight="-8dp"
+			android:textColor="#fff"
+			android:text="" />
+
+		<Button android:layout_width="fill_parent"
+			android:layout_height="5dp" android:layout_gravity="center"
+			android:background="#922" android:layout_alignParentBottom="true" />
+	</RelativeLayout>
+
+	<ViewFlipper android:id="@+id/viewflipper"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+
+		<ListView android:id="@+id/actions_view" 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+		
+		<ListView android:id="@+id/changelog"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+
+		<ListView android:id="@+id/attachements" 
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+
+	</ViewFlipper>
+
+</LinearLayout>

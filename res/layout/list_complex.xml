@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09 -->
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:paddingTop="10dip"
+	android:paddingBottom="10dip"
+	android:paddingLeft="15dip">
+	<TextView
+		android:id="@+id/list_complex_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		/>
+	<TextView
+		android:id="@+id/list_complex_caption"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/list_complex_title"
+		android:layout_marginRight="40dp"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		/>
+	<TextView
+		android:id="@+id/list_complex_action"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:layout_alignParentRight="true"
+		android:typeface="monospace"
+		android:gravity="fill"
+		android:textSize="30dp"
+		android:textScaleX="0.4"
+		android:layout_marginRight="5dp"
+		android:text=""
+		/>
+</RelativeLayout>
