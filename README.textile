@@ -3,9 +3,10 @@ is a simple Trac browser for android.
 
 h2. Current objectives
  * view and edit wiki pages
- * view and edit complete ticket infos (details, changelog, actions)
- * create ticket, with optional screenshot from camera
- * view roadmaps
+ * create ticket, view and edit complete ticket infos (details, changelog, actions)
+ * create, view + tickets summary, edit milestones
+ * attachments + screenshot tool
+ * search the trac instance
 
 h2. Requires
  * "XmlRpcPlugin":http://trac-hacks.org/wiki/XmlRpcPlugin to be installed on trac instance
@@ -20,6 +21,15 @@ h3. Tickets timeline view
 
 h3. Ticket changelog
 !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_changelog.png!
+
+h3. Ticket attachments
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_attachments.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/ticket_attachments.png!
+
+h3. Milestones
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/milestones.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/milestones.png!
+
+h3. Milestone view
+!http://github.com/vincent/TracDroid/raw/master/doc/screenshots/milestone.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/milestone.png!
 
 h3. Wiki view
 !http://github.com/vincent/TracDroid/raw/master/doc/screenshots/wiki.png!!https://github.com/vincent/TracDroid/raw/master/doc/screenshots/wiki.png!
