@@ -12,6 +12,7 @@ import org.vl.trac.tracdroid.R;
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 public class TicketAttachementsAdapter extends SeparatedListAdapter {
 
@@ -38,15 +39,26 @@ public class TicketAttachementsAdapter extends SeparatedListAdapter {
 	}
 
 	private void feedticketAttachments() {
-		ticketAttachmentsList.clear();
 		Vector<TicketAttachement> attachments = TracDroid.server.listAttachments(ticket.id);
-		Iterator<TicketAttachement> it = attachments.iterator();
-		while (it.hasNext()) {
-			TicketAttachement att = it.next();
-			// FIXME: use preg
-			int nameLength = att.filename.length();
-			ticketAttachmentsList.add(SeparatedListAdapter.createItem(att.filename, att.description,
-										att.filename.substring(nameLength-3, nameLength).toUpperCase()));
+		if (TracDroid.server.isOnError()) {
+			Toast.makeText(context, context.getString(R.string.oops), Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		ticketAttachmentsList.clear();
+		
+		if (attachments.size() > 0) {
+			Iterator<TicketAttachement> it = attachments.iterator();
+			while (it.hasNext()) {
+				TicketAttachement att = it.next();
+				// FIXME: use preg
+				int nameLength = att.filename.length();
+				ticketAttachmentsList.add(SeparatedListAdapter.createItem(att.filename, att.description,
+											att.filename.substring(nameLength-3, nameLength).toUpperCase()));
+			}
+		}
+		else {
+			ticketAttachmentsList.add(SeparatedListAdapter.createItem(context.getString(R.string.no_attachment), "", ""));
 		}
 		notifyDataSetChanged();
 	}

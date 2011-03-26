@@ -12,6 +12,7 @@ import org.vl.trac.Ticket;
 import org.vl.trac.TicketAction;
 import org.vl.trac.TicketAttributes;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -53,11 +54,18 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 	static int flipView = 0;
 	static int FLIP_VIEW_ACTIONS = 0;
 	static int FLIP_VIEW_CHANGELOG = 1;
+	static int FLIP_VIEW_CHANGELOG_REVERSE = 3;
 	static int FLIP_VIEW_ATTACHMENTS = 2;
+	
+	static final int HEADER_SIZE_SMALL = 95;
+	static final int HEADER_SIZE_MEDIUM = 150;
+	static final int HEADER_SIZE_TALL = 300;
 	
 	String comment = "";
 	
 	TicketAttachementsAdapter attachmentsAdapter;
+	TicketChangelogAdapter changelogAdapter;
+	ListView changelogListView;
 
 	TicketActionsAdapter actionsAdapter;
 	ListView actionsListView;
@@ -77,8 +85,13 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 	}
 	
 	public boolean loadTicket(int id) {
+		//if (id == null) finish();
 		ProgressDialog dialog = ProgressDialog.show(this, "", this.getString(R.string.loading_ticket), true, true);
 		Ticket a_ticket = TracDroid.server.getTicket(id, true);
+		if (TracDroid.server.isOnError()) {
+			dialog.dismiss();
+			TicketActivity.this.finishActivity(Activity.RESULT_CANCELED);
+		}
 		dialog.dismiss();
 		if (a_ticket != null) {
 			this.loadTicket(a_ticket);
@@ -97,6 +110,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 		current_attachements = new Vector<String>();
 		ticketFieldDefinitions = new HashMap<String, Object[]>();
         getWindow().setTitle(getString(R.string.app_name) + " - " + (creating() ? getString(R.string.create_ticket) : String.format(getString(R.string.ticket_number), ticket.id)));
+        getWindow().makeActive();
         		
 		somethingChanged();
 
@@ -245,10 +259,10 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 			findViewById(R.id.title_edit).setVisibility(View.VISIBLE);
 			findViewById(R.id.desc_edit).setVisibility(View.VISIBLE);
 			
-			collapseHeader(300);
+			collapseHeader(HEADER_SIZE_TALL);
 		}
 		else {
-			collapseHeader(150);
+			collapseHeader(HEADER_SIZE_MEDIUM);
 
 			// Ticket actions
 			actionsAdapter = new TicketActionsAdapter(getApplicationContext(), ticket);
@@ -263,36 +277,35 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 					// headerLayoutParams.height = 150 - (80 / totalItemCount * firstVisibleItem);
 					
 					if (firstVisibleItem < 1)
-						collapseHeader(150);
+						collapseHeader(HEADER_SIZE_TALL);
 					else if (firstVisibleItem < 5)
-						collapseHeader(120);
+						collapseHeader(HEADER_SIZE_MEDIUM);
 					else
-						collapseHeader(80);
+						collapseHeader(HEADER_SIZE_SMALL);
 				}
 				@Override
 				public void onScrollStateChanged(AbsListView view, int scrollState) { }
 			});
 			
 			// ChangeLog
-			final TicketChangelogAdapter changelogAdapter = new TicketChangelogAdapter(getApplicationContext(), ticket);
-			final ListView changelogListView = (ListView) findViewById(R.id.changelog);
+			changelogAdapter = new TicketChangelogAdapter(getApplicationContext(), ticket);
+			changelogListView = (ListView) findViewById(R.id.changelog);
 			changelogListView.setAdapter(changelogAdapter);
 			
 			// Handle view switcher
 			findViewById(R.id.link_changelog).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					switchView(FLIP_VIEW_CHANGELOG);
-				}
-			});
-			findViewById(R.id.link_changelog).setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					if (flipView != FLIP_VIEW_CHANGELOG) switchView(FLIP_VIEW_CHANGELOG);
-					changelogAdapter.reverse();
-					changelogListView.postInvalidate();
-					((TextView) findViewById(R.id.changelog_order)).setText(Html.fromHtml(changelogAdapter.isReversed() ? "&darr;":"&uarr;" ).toString());
-					return true;
+					// -> changelog -> changelog_reverse -> actions
+					if (flipView == FLIP_VIEW_CHANGELOG) {
+						switchView(FLIP_VIEW_CHANGELOG_REVERSE);
+					}
+					else if (flipView == FLIP_VIEW_CHANGELOG_REVERSE) {
+						switchView(FLIP_VIEW_ACTIONS);
+					}
+					else {
+						switchView(FLIP_VIEW_CHANGELOG);
+					}
 				}
 			});
 		}
@@ -370,7 +383,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
     			Log.d("ticket.update: ticket has been updated ", new_ticket.toString());
         		dialog.dismiss();
     			Toast.makeText(getApplicationContext(), this.getString(R.string.ticket_updated), Toast.LENGTH_SHORT).show();
-        		current_changes.clear();
+    			loadTicket(ticket.id);
         	}
         	else {
     			Toast.makeText(getApplicationContext(), this.getString(R.string.oops), Toast.LENGTH_SHORT).show();
@@ -507,25 +520,32 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 		if (view == FLIP_VIEW_CHANGELOG) {
 			((ImageButton) findViewById(R.id.link_changelog)).setBackgroundResource(R.drawable.ic_menu_recent_history_on);
 			((ImageButton) findViewById(R.id.file_take)).setBackgroundResource(R.drawable.ic_menu_attachment);
-
-			collapseHeader(80);
+		}
+		else if (view == FLIP_VIEW_CHANGELOG_REVERSE) {
+			((ImageButton) findViewById(R.id.link_changelog)).setBackgroundResource(R.drawable.ic_menu_recent_history_on);
+			((ImageButton) findViewById(R.id.file_take)).setBackgroundResource(R.drawable.ic_menu_attachment);
+			changelogAdapter.reverse();
+			changelogListView.postInvalidate();
+			((TextView) findViewById(R.id.changelog_order)).setText(Html.fromHtml(changelogAdapter.isReversed() ? "&darr;":"&uarr;" ).toString());
 		}
 		else if (view == FLIP_VIEW_ATTACHMENTS) {
 			((ImageButton) findViewById(R.id.file_take)).setBackgroundResource(R.drawable.ic_menu_attachment_on);
 			((ImageButton) findViewById(R.id.link_changelog)).setBackgroundResource(R.drawable.ic_menu_recent_history);
-
-			collapseHeader(80);
 		}
 		else if (view == FLIP_VIEW_ACTIONS) {
-			collapseHeader(120);
+			((ImageButton) findViewById(R.id.link_changelog)).setBackgroundResource(R.drawable.ic_menu_recent_history);
+			((TextView) findViewById(R.id.changelog_order)).setText("");
 		}
+
+		collapseHeader(HEADER_SIZE_MEDIUM);
 		
 		flipView = view;
 		
 		ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewflipper);
 		flipper.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.push_up_in));
-		flipper.getChildAt(flipView).scrollTo(0, 0);
-		flipper.setDisplayedChild(flipView);
+		// FLIP_VIEW_CHANGELOG_REVERSE is not a real view
+		flipper.getChildAt(flipView==FLIP_VIEW_CHANGELOG_REVERSE ? FLIP_VIEW_CHANGELOG : flipView).scrollTo(0, 0);
+		flipper.setDisplayedChild(flipView==FLIP_VIEW_CHANGELOG_REVERSE ? FLIP_VIEW_CHANGELOG : flipView);
 		flipper.scrollTo(0, 0);
     }
     
@@ -639,7 +659,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 								    	String newValue = arChoices[item].toString();
 								    	((TextView) view.findViewById(R.id.list_complex_caption)).setText(newValue);
 		
-								    	Log.d("TicketActivity", "changed to "+newValue);
+								    	Log.d("TicketActivity", (String) input.get("name")+" changed to "+newValue);
 		
 								    	if (newValue.equals(input.get("value"))) {
 											current_changes.remove("action");
@@ -648,7 +668,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 										}
 										else {
 											String[] action_names = ((String) input.get("name")).split("_");
-											String action_name = action_names[1] + "_" + action_names[2];
+											String action_name = action_names[1];
 											
 											current_changes.put("action", action_name);
 											current_changes.put((String) input.get("name"), newValue);
@@ -671,7 +691,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 								    	String newValue = editor.getText().toString();
 								    	((TextView) view.findViewById(R.id.list_complex_caption)).setText(newValue);
 		
-								    	Log.d("TicketActivity", "changed to "+newValue);
+								    	Log.d("TicketActivity", (String) input.get("name")+" changed to "+newValue);
 		
 								    	if (newValue.equals("")) {
 											current_changes.remove("action");
@@ -680,7 +700,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 										}
 										else {
 											String[] action_names = ((String) input.get("name")).split("_");
-											String action_name = action_names[1] + "_" + action_names[2];
+											String action_name = action_names[1];
 											
 											current_changes.put("action", action_name);
 											current_changes.put((String) input.get("name"), newValue);
@@ -701,7 +721,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setMessage(title+" ?")
 				       .setCancelable(false)
-				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				       .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 								current_changes.put("action", title);
 								TicketActivity.this.somethingChanged();
@@ -709,7 +729,7 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 						    	TicketActivity.this.actionsListView.invalidateViews();
 				           }
 				       })
-				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+				       .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 								current_changes.remove("action");
 								current_changes.remove(title);
@@ -741,3 +761,4 @@ public class TicketActivity extends EditUnitActivity implements OnItemClickListe
 	}
     
 }
+

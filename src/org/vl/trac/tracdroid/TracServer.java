@@ -32,6 +32,8 @@ public class TracServer {
 	public String username;
 	public String password;
 	public String wikiStartPage;
+	
+	Exception error;
 
 	/**
 	 * TracServer constructor. Creates new instance based on server URI and credentials
@@ -69,6 +71,16 @@ public class TracServer {
 	*/
 
 	/**
+	 * Does the last call produce an error ?
+	 */
+	public boolean isOnError() {
+		return (error != null);
+	}
+	public Exception lastError() {
+		return error;
+	}
+	
+	/**
 	 * Convenience function to know if the device is connected or not
 	 * 
 	 * @param application context
@@ -102,6 +114,7 @@ public class TracServer {
 		Vector<String> results = new Vector<String>();
     	Object[] methods_obj;
 		try {
+			error = null;
 			methods_obj = (Object[]) client.call(methodName);
 
 			for (int i = methods_obj.length-1;  i >= 0 ;  i--) {
@@ -112,6 +125,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			error = e;
 		}
 		return results;
 	}
@@ -169,6 +183,7 @@ public class TracServer {
 	public Vector<Milestone> listRoadmaps() {
     	Vector<Milestone> roadmaps = new Vector<Milestone>();
         try {
+			error = null;
         	Vector<HashMap> method_signs = new Vector<HashMap>();
 
         	Object[] methods_obj = (Object[]) client.call("ticket.milestone.getAll");
@@ -197,7 +212,8 @@ public class TracServer {
         	
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
-			e.printStackTrace();
+						e.printStackTrace();
+			error = e;
 		}
     	
 		return roadmaps;
@@ -207,6 +223,7 @@ public class TracServer {
 	public Milestone getMilestone(String name) {
 		Milestone milestone = null;
 		try {
+			error = null;
 			HashMap milestone_obj = (HashMap) client.call("ticket.milestone.get", name);
 
 			if (milestone_obj.size() > 0) {
@@ -216,6 +233,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return milestone;
 	}
@@ -223,11 +241,13 @@ public class TracServer {
 	public int updateMilestone(String name, HashMap<String,String> changes) {
 		int res = -1;
 		try {
+			error = null;
 			res = ((Integer) client.call("ticket.milestone.update", name, changes)).intValue();
 
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return res;
 	}
@@ -235,11 +255,13 @@ public class TracServer {
 	public int createMilestone(String name, HashMap<String,String> changes) {
 		int res = -1;
 		try {
+			error = null;
 			res = ((Integer) client.call("ticket.milestone.create", name, changes)).intValue();
 
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return res;
 	}
@@ -248,6 +270,7 @@ public class TracServer {
     	Vector<String> methods = new Vector<String>();
     	/*
         try {
+			error = null;
         	Object[] methods_obj = (Object[]) client.call("ticket.milestone.getAll");
         	for (int i = 0;  i < methods_obj.length;  i++) {
                 if (methods_obj[i] != null) {
@@ -258,6 +281,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		*/
     	
@@ -274,6 +298,7 @@ public class TracServer {
 		Log.d("PROFILING", "get tickets");
 		Vector<HashMap> recent_changes = new Vector<HashMap>();
         try {
+			error = null;
 
         	Vector<HashMap> method_signs = new Vector<HashMap>();
         	Object[] methods_obj = (Object[]) client.call("ticket.getRecentChanges", since);
@@ -315,6 +340,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
     	
 		return recent_changes;
@@ -335,6 +361,7 @@ public class TracServer {
 		HashMap<String, TicketAction> ticket_actions;
 	
     	try {
+			error = null;
     		
         	// Fetch a ticket. Returns [id, time_created, time_changed, attributes]
 			Object[] ticket_obj = (Object[]) client.call("ticket.get", ticket_id);
@@ -365,6 +392,7 @@ public class TracServer {
 
     	} catch (XMLRPCException e) {
 			e.printStackTrace();
+			error = e;
 		}
 		
     	return ticket;
@@ -406,6 +434,7 @@ public class TracServer {
     	
     	
     	try {
+			error = null;
     		
 			Object[] methods_results = (Object[]) client.call("system.multicall", method_signs.toArray());
 			
@@ -437,6 +466,7 @@ public class TracServer {
 
     	} catch (XMLRPCException e) {
 			e.printStackTrace();
+			error = e;
 		}
 		
     	return ticket;
@@ -452,12 +482,14 @@ public class TracServer {
 	 */
 	public Ticket updateTicket(int ticket_id, String comment, HashMap<String,String> attributes) {
         try {
+			error = null;
         	Object[] ticket_obj = (Object[]) client.call("ticket.update", ticket_id, comment, attributes);
         	return Ticket.fromXMLRPC_ticket_get(ticket_obj);
         	
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		
 		return null;
@@ -474,12 +506,14 @@ public class TracServer {
 	 */
 	public int createTicket(String summary, String description, String comment, HashMap<String,String> attributes, boolean notify) {
         try {
+			error = null;
         	Object ticket_id_obj = client.call("ticket.create", summary, comment, attributes, notify);
         	return Integer.parseInt(String.valueOf(ticket_id_obj));
         	
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		
 		return 0;
@@ -493,11 +527,13 @@ public class TracServer {
 	 */
 	public String wikiToHtml(String text) {
         try {
+			error = null;
         	return (String) client.call("wiki.wikiToHtml", text);
         	
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return text;
 	}
@@ -522,11 +558,13 @@ public class TracServer {
 	public String getPageHTML(String pagename, Integer version) {
 		Log.d("PROFILING", "get wiki.getPageHTML");
         try {
+			error = null;
         	return (String) client.call("wiki.getPageHTML", pagename);
         	
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return null;
     }
@@ -572,6 +610,7 @@ public class TracServer {
 		
 		Log.d("PROFILING", "get wiki.getPageComplete");
         try {
+			error = null;
     		Object[] methods_results = (Object[]) client.call("system.multicall", method_signs.toArray());
     		
     		Object[] method_result_wiki = (Object[]) methods_results[0];
@@ -583,6 +622,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 
 		return result;
@@ -599,11 +639,13 @@ public class TracServer {
 	public boolean putPage(String pagename, String content, HashMap<String, String> attrs) {
 		boolean success = false;
         try {
+			error = null;
         	Object res = client.call("wiki.putPage", pagename, content, attrs);
         	success = (res != null);
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return success;
 	}
@@ -617,6 +659,7 @@ public class TracServer {
 	public Vector<TicketAttachement> listAttachments(int ticket_id) {
 		Vector<TicketAttachement> attachements = new Vector<TicketAttachement>();
         try {
+			error = null;
         	Object[] res = (Object[]) client.call("ticket.listAttachments", ticket_id);
 
 			if (res.length > 0) {
@@ -628,6 +671,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return attachements;
 	}
@@ -641,10 +685,12 @@ public class TracServer {
 	 */
 	public byte[] getAttachment(int ticket_id, String filename) {
         try {
+			error = null;
         	return Base64.decode((byte[]) client.call("ticket.getAttachment", ticket_id, filename), Base64.DEFAULT);
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return null;
 	}
@@ -674,10 +720,12 @@ public class TracServer {
 	 */
 	public String putAttachment(int ticket_id, String filename, String description, byte[] base64Data, boolean replace) {
         try {
+			error = null;
         	return (String) client.call("ticket.putAttachment", ticket_id, filename, description, base64Data, replace);
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return null;
 	}
@@ -727,6 +775,7 @@ public class TracServer {
 	public Vector<Ticket> ticketQuery(String query) {
 		Vector<Ticket> results = new Vector<Ticket>();
         try {
+			error = null;
         	Object[] ticket_ids = (Object[]) client.call("ticket.query", query);
 
 			for (int i=0; i < ticket_ids.length; i++) {
@@ -737,6 +786,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return null;
 	}
@@ -751,6 +801,7 @@ public class TracServer {
 	public Vector<SearchResult> performSearch(String query, String[] filters) {
 		Vector<SearchResult> results = new Vector<SearchResult>();
         try {
+			error = null;
         	Object[] res = (Object[]) client.call("search.performSearch", query, new String[] { "ticket", "changeset", "milestone", "wiki", "" });
 
 			for (int i=0; i < res.length; i++) {
@@ -761,6 +812,7 @@ public class TracServer {
 		} catch (XMLRPCException e) {
 			Log.e("error", "error", e);
 			e.printStackTrace();
+			error = e;
 		}
 		return null;
 	}

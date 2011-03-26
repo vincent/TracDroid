@@ -13,6 +13,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.vl.trac.Ticket;
 import org.vl.trac.TicketChange;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TicketsActivity extends ThreadedListActivity {
 
@@ -168,6 +170,10 @@ public class TicketsActivity extends ThreadedListActivity {
 	    			while (dataRecent.size() == 0 && running) {
 						cal.add(Calendar.HOUR, -hours_timeback);
 						dataRecent.addAll(TracDroid.server.getRecentTicketChanges( cal.getTime() ));
+						if (TracDroid.server.isOnError()) {
+							dialog.dismiss();
+							TicketsActivity.this.finishActivity(Activity.RESULT_CANCELED);
+						}
 						mHandler.post(mUpdateResults);
 						if (!TracDroid.server.isConnected(getApplicationContext())) {
 							dialog.setTitle(getApplicationContext().getString(R.string.no_network));
@@ -190,6 +196,10 @@ public class TicketsActivity extends ThreadedListActivity {
 	            public void run() {
 	            	dataQuery.clear();
 					dataQuery = TracDroid.server.ticketQuery(ticketQuery);
+					if (TracDroid.server.isOnError()) {
+						dialog.dismiss();
+						TicketsActivity.this.finishActivity(Activity.RESULT_CANCELED);
+					}
 					mHandler.post(mUpdateResults);
 					dialog.dismiss();
 	            }

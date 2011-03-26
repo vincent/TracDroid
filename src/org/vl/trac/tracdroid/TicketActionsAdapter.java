@@ -81,9 +81,10 @@ public class TicketActionsAdapter extends SeparatedListAdapter {
 					context.getString(R.string.not_owned),""));
 
 		// Current status
-		ticketPropertiesList.add(SeparatedListAdapter.createItem(
-					String.format(context.getString(R.string.status_is), ticket.attributes.status),
-					""));
+		String status = String.format(context.getString(R.string.status_is), ticket.attributes.status);
+		if (ticket.attributes.status.equals("closed"))
+			status = status.concat(" ("+ticket.attributes.resolution+")");
+		ticketPropertiesList.add(SeparatedListAdapter.createItem(status, ""));
 
 		// Type
 		ticketPropertiesList.add(SeparatedListAdapter.createItem(context.getString(R.string.ticket_type), ticket.attributes.type, ">"));

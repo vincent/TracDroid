@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, TracDroid!</string>
-    <string name="app_name">TracDroid</string>
+<string name="hello">Hello World, TracDroid!</string>
+<string name="app_name">TracDroid</string>
+
+<string name="app_dec">Manage a Trac bugtracker instance</string>
 <string-array name="prefTracServerLabels"><item>Create a new one</item>
 </string-array>
 <string-array name="prefTracServerValues"><item>new</item>
@@ -14,7 +16,7 @@
 <string name="_years">%s years</string>
 
 <string name="loading_ticket">Loading ticket</string>
-<string name="reported_by_on">reported by %s\n%s</string>
+<string name="reported_by_on" formatted="false">reported by %s\n%s</string>
 <string name="owned_by">owned by %s</string>
 <string name="status_is">status : %s</string>
 <string name="updating_ticket">Updating ticket</string>
@@ -29,7 +31,7 @@
 <string name="wiki_page_edited">Wiki page &quot;%s&quot; edited</string>
 <string name="oops">Oups, something goes wrong</string>
 <string name="ok">OK</string><string name="cancel">Cancel</string>
-<string name="_by">#%s by %s</string>
+<string name="_by" formatted="false">#%s by %s</string>
 <string name="loading_wiki_page">Loading wiki page</string>
 <string name="ticket_title">Ticket summary</string>
 <string name="ticket_desc_edit">Enter description</string>
@@ -39,7 +41,8 @@
 <string name="changelog">Changelog</string>
 <string name="no_network">No network</string>
 <string name="create_ticket">Create new ticket</string>
-<string name="ticket_created">Ticket created</string><string name="toolbar_search">search..</string>
+<string name="ticket_created">Ticket created</string>
+<string name="toolbar_search">search..</string>
 <string name="create_milestone">Create new milestone</string>
 <string name="take_photo">Add screenshot</string>
 <string name="shoot_the_bug">Shoot the bug !</string>
@@ -47,7 +50,6 @@
 <string name="finish">Finish</string>
 <string name="reshoot">Reshoot</string>
 <string name="take_file">Attach a file</string>
-<string name="app_dec">Manage a Trac bugtracker instance</string>
 
 <string name="not_owned">not owned</string>
 
@@ -96,4 +98,5 @@
 <string name="ticket_changes_recent">Recent ticket changes</string>
 <string name="milestones">Milestones</string>
 <string name="search_trac">Search Trac</string>
+<string name="no_attachment">No attachment</string>
 </resources>

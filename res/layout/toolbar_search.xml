@@ -3,6 +3,6 @@
 		android:layout_height="10dp"
 		android:layout_width="wrap_content"
 		android:id="@+id/toolbar_search_input"
-		android:hint="@string/toolbar_search"
+		android:hint="@string/search_trac"
 		android:textColor="#eee">
 </EditText>
